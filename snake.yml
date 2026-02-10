@@ -8,6 +8,7 @@ game:
 
     snake:
         initial_length: 3
+        show_vision: true # Visualize the snake's POV in terminal
 
     board:
         size: 10 # Playable area. Recommended range [6-20+]

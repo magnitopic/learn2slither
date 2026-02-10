@@ -1,4 +1,5 @@
 class Board:
-    def __init__(self, size):
-        self.size = size
-        self.board = [[0 for _ in range(size)] for _ in range(size)]
+    def __init__(self, boardConfig):
+        self.size = boardConfig["size"]
+        self.num_green_apples = boardConfig["num_green_apples"]
+        self.num_red_apples = boardConfig["num_red_apples"]
