@@ -1,0 +1,15 @@
+game:
+    max_steps: 1000
+
+    screen:
+        size_px: 600
+        show_stats: true
+        show_grid_lines: true
+
+    snake:
+        initial_length: 3
+
+    board:
+        size: 10 # Playable area. Recommended range [6-20+]
+        num_green_apples: 2
+        num_red_apples: 1
