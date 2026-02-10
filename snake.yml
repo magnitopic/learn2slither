@@ -7,7 +7,7 @@ game:
         show_grid: true
 
         colour:
-            snake: "#00FF00"
+            snake: [125, 100, 225]
             apple_green: "#00FF00"
             apple_red: "#FF0000"
             bg: [240, 240, 230]

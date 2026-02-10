@@ -75,7 +75,7 @@ def main_loop(board, screen):
             screen.print_board(board)
 
         # FPS
-        clock.tick(game_speed * 5)
+        clock.tick(game_speed * 8)
 
     pygame.quit()
 
@@ -88,8 +88,12 @@ if __name__ == "__main__":
     with open('snake.yml', 'r') as file:
         loaded_data = yaml.safe_load(file)
 
-    board: Board = Board(loaded_data["game"]["board"])
-    screen: Screen = Screen(loaded_data["game"]["screen"])
+    try:
+        board: Board = Board(loaded_data["game"]["board"], loaded_data["game"]["snake"])
+        screen: Screen = Screen(loaded_data["game"]["screen"])
+    except Exception as e:
+        print(f"{RED}Error: {e}{RESET}")
+        sys.exit(1)
 
     main_loop(board, screen)
 
