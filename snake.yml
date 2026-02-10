@@ -2,9 +2,15 @@ game:
     max_steps: 1000
 
     screen:
-        size_px: 600
+        size_px: 900
         show_stats: true
-        show_grid_lines: true
+        show_grid: true
+
+        colour:
+            snake: "#00FF00"
+            apple_green: "#00FF00"
+            apple_red: "#FF0000"
+            bg: [240, 240, 230]
 
     snake:
         initial_length: 3

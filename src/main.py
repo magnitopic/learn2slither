@@ -46,8 +46,11 @@ def handleArgs():
 
 def main_loop(board, screen):
     clock = pygame.time.Clock()
+    game_speed = 3  # Speed from 1-5
     running = True
     paused = False
+
+    number_keys = ["K_1", "K_2", "K_3", "K_4", "K_5"]
 
     while running:
         # Handle events
@@ -57,15 +60,22 @@ def main_loop(board, screen):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     paused = not paused
+                    if paused:
+                        print(f"{YELLOW}⏸️ Game paused{RESET}")
+                    else:
+                        print(f"{GREEN}▶️ Game resumed{RESET}")
                 elif event.key == pygame.K_ESCAPE:
                     running = False
+                elif event.key in [getattr(pygame, key) for key in number_keys]:
+                    game_speed = int(event.unicode)
+                    print(f"{YELLOW}⚡ Game speed set to {game_speed}{RESET}")
 
         # Run game logic
         if not paused:
             screen.print_board(board)
 
         # FPS
-        clock.tick(10)
+        clock.tick(game_speed * 5)
 
     pygame.quit()
 
@@ -78,10 +88,9 @@ if __name__ == "__main__":
     with open('snake.yml', 'r') as file:
         loaded_data = yaml.safe_load(file)
 
-    print("Data read from 'snake.yml':")
-    print(loaded_data)
-
     board: Board = Board(loaded_data["game"]["board"])
     screen: Screen = Screen(loaded_data["game"]["screen"])
 
     main_loop(board, screen)
+
+    print(f"{CYAN}✌️ Game finished{RESET}")
