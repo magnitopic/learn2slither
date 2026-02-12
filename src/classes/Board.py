@@ -8,7 +8,8 @@ class Board:
         self.size = boardConfig["size"]
         self.num_green_apples = boardConfig["num_green_apples"]
         self.num_red_apples = boardConfig["num_red_apples"]
-        self.value = np.full((self.size + 1, self.size + 1), CellType.EMPTY.value)
+        self.value = np.full(
+            (self.size + 1, self.size + 1), CellType.EMPTY.value)
 
         # Place walls around the edges
         self.value[0, :] = CellType.WALL.value
@@ -30,21 +31,19 @@ class Board:
                 "Board size is too small for the snake's initial length.")
 
         direction = np.random.choice(["up", "down", "left", "right"])
-        x = np.random.randint(1, self.size - 1)
-        y = np.random.randint(1, self.size - 1)
+        x = np.random.randint(self.snake.length, self.size - self.snake.length)
+        y = np.random.randint(self.snake.length, self.size - self.snake.length)
         self.value[y, x] = CellType.SNAKE_HEAD.value
         snake_body.append((y, x))
 
         if direction in ["up", "down"]:
             for i in range(self.snake.length - 1):
-                self.value[y + i, x] = CellType.SNAKE_BODY.value
-                snake_body.append((y + i, x))
+                self.value[y + (i + 1), x] = CellType.SNAKE_BODY.value
+                snake_body.append((y + (i + 1), x))
         else:
-            x = np.random.randint(1, self.size - min_space)
-            y = np.random.randint(1, self.size - 1)
             for i in range(self.snake.length - 1):
-                self.value[y, x + i] = CellType.SNAKE_BODY.value
-                snake_body.append((y, x + i))
+                self.value[y, x + (i + 1)] = CellType.SNAKE_BODY.value
+                snake_body.append((y, x + (i + 1)))
 
         self.snake.body = snake_body
 
