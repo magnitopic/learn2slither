@@ -7,6 +7,7 @@ class Snake:
         self.show_vision: bool = snakeConfig.get("show_vision", False)
         self.current_direction: Move = Move.RIGHT
         self.body = []
+        self.head_pos = None
 
     def move(self):
         return None

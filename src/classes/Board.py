@@ -35,6 +35,7 @@ class Board:
         y = np.random.randint(self.snake.length, self.size - self.snake.length)
         self.value[y, x] = CellType.SNAKE_HEAD.value
         snake_body.append((y, x))
+        self.snake.head_pos = (y, x)
 
         if direction in ["up", "down"]:
             for i in range(self.snake.length - 1):
@@ -60,9 +61,49 @@ class Board:
         for _ in range(self.num_red_apples):
             self.place_apple(CellType.RED_APPLE)
 
+    def moveSnake(self, move: Move):
+        new_head_pos = None
+        eating_red_apple = False
+        eating_green_apple = False
+
+        if move == Move.UP:
+            new_head_pos = (self.snake.head_pos[0] - 1, self.snake.head_pos[1])
+        elif move == Move.DOWN:
+            new_head_pos = (self.snake.head_pos[0] + 1, self.snake.head_pos[1])
+        elif move == Move.LEFT:
+            new_head_pos = (self.snake.head_pos[0], self.snake.head_pos[1] - 1)
+        elif move == Move.RIGHT:
+            new_head_pos = (self.snake.head_pos[0], self.snake.head_pos[1] + 1)
+
+        print(self.value[new_head_pos])
+
+        self.snake.body.insert(0, new_head_pos)
+        self.snake.head_pos = new_head_pos
+
+        self.snake.body.pop()
+
+    def updateBoardValue(self):
+        # remove all snake body and head
+        self.value[self.value ==
+                   CellType.SNAKE_HEAD.value] = CellType.EMPTY.value
+        self.value[self.value ==
+                   CellType.SNAKE_BODY.value] = CellType.EMPTY.value
+
+        for index, (y, x) in enumerate(self.snake.body):
+            if index == 0:
+                self.value[y, x] = CellType.SNAKE_HEAD.value
+            else:
+                self.value[y, x] = CellType.SNAKE_BODY.value
+
     def handleTurn(self, move: Move):
         if move is None:
             move = self.snake.current_direction
+
+        self.moveSnake(move)
+
+        self.updateBoardValue()
+
+    """ Aux functions """
 
     def __str__(self):
         return "\n".join(" ".join(row) for row in self.value)

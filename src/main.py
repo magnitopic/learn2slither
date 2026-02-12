@@ -47,7 +47,7 @@ def handleArgs():
 
 def main_loop(board, screen, gameConfig):
     clock = pygame.time.Clock()
-    game_speed = 3  # Speed from 1-5
+    game_speed = 1  # Speed from 1-5
     running = True
     paused = False
     move = None
@@ -96,7 +96,7 @@ def main_loop(board, screen, gameConfig):
             screen.print_board(board)
 
         # FPS
-        clock.tick(game_speed * 8)
+        clock.tick(game_speed * 2)
 
     pygame.quit()
 
