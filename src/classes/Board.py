@@ -1,5 +1,5 @@
 from classes.Snake import Snake
-from enums import CellType
+from enums import CellType, Move
 import numpy as np
 
 
@@ -8,7 +8,7 @@ class Board:
         self.size = boardConfig["size"]
         self.num_green_apples = boardConfig["num_green_apples"]
         self.num_red_apples = boardConfig["num_red_apples"]
-        self.value = np.full((self.size, self.size), CellType.EMPTY.value)
+        self.value = np.full((self.size + 1, self.size + 1), CellType.EMPTY.value)
 
         # Place walls around the edges
         self.value[0, :] = CellType.WALL.value
@@ -22,23 +22,31 @@ class Board:
         self.place_initial_apples()
 
     def place_snake(self):
-        min_space = self.snake.length + 1
+        min_space = self.snake.length + 2
+        snake_body = []
 
         if self.size < min_space:
             raise ValueError(
                 "Board size is too small for the snake's initial length.")
 
         direction = np.random.choice(["up", "down", "left", "right"])
+        x = np.random.randint(1, self.size - 1)
+        y = np.random.randint(1, self.size - 1)
+        self.value[y, x] = CellType.SNAKE_HEAD.value
+        snake_body.append((y, x))
+
         if direction in ["up", "down"]:
-            x = np.random.randint(1, self.size - 1)
-            y = np.random.randint(1, self.size - min_space)
-            for i in range(self.snake.length):
+            for i in range(self.snake.length - 1):
                 self.value[y + i, x] = CellType.SNAKE_BODY.value
+                snake_body.append((y + i, x))
         else:
             x = np.random.randint(1, self.size - min_space)
             y = np.random.randint(1, self.size - 1)
-            for i in range(self.snake.length):
+            for i in range(self.snake.length - 1):
                 self.value[y, x + i] = CellType.SNAKE_BODY.value
+                snake_body.append((y, x + i))
+
+        self.snake.body = snake_body
 
     def place_apple(self, type):
         empty_cells = np.argwhere(self.value == CellType.EMPTY.value)
@@ -52,3 +60,10 @@ class Board:
             self.place_apple(CellType.GREEN_APPLE)
         for _ in range(self.num_red_apples):
             self.place_apple(CellType.RED_APPLE)
+
+    def handleTurn(self, move: Move):
+        if move is None:
+            move = self.snake.current_direction
+
+    def __str__(self):
+        return "\n".join(" ".join(row) for row in self.value)

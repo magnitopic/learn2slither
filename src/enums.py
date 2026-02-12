@@ -8,3 +8,10 @@ class CellType(Enum):
     SNAKE_BODY = 'S'    # Snake body
     GREEN_APPLE = 'G'   # Green apple (+1 length)
     RED_APPLE = 'R'     # Red apple (-1 length)
+
+
+class Move(Enum):
+    UP = 'up'
+    DOWN = 'down'
+    LEFT = 'left'
+    RIGHT = 'right'

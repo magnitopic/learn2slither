@@ -1,5 +1,6 @@
 game:
     max_steps: 1000
+    human_player: false
 
     screen:
         size_px: 900

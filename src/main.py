@@ -1,5 +1,6 @@
 from classes.Board import Board
 from classes.Screen import Screen
+from enums import Move
 from aux.colours import *
 import pygame
 import yaml
@@ -44,13 +45,20 @@ def handleArgs():
     return values
 
 
-def main_loop(board, screen):
+def main_loop(board, screen, gameConfig):
     clock = pygame.time.Clock()
     game_speed = 3  # Speed from 1-5
     running = True
     paused = False
+    move = None
 
     number_keys = ["K_1", "K_2", "K_3", "K_4", "K_5"]
+    movement_keys = {
+        pygame.K_UP: Move.UP,
+        pygame.K_DOWN: Move.DOWN,
+        pygame.K_LEFT: Move.LEFT,
+        pygame.K_RIGHT: Move.RIGHT
+    }
 
     while running:
         # Handle events
@@ -69,9 +77,22 @@ def main_loop(board, screen):
                 elif event.key in [getattr(pygame, key) for key in number_keys]:
                     game_speed = int(event.unicode)
                     print(f"{YELLOW}⚡ Game speed set to {game_speed}{RESET}")
+                elif event.key in movement_keys:
+                    move = movement_keys[event.key]
 
         # Run game logic
         if not paused:
+            print(board)
+            print("_"*20)
+
+            # Get snake move
+            if not gameConfig["human_player"]:
+                move = board.snake.move()
+
+            # Update board state
+            board.handleTurn(move)
+
+            # Draw everything
             screen.print_board(board)
 
         # FPS
@@ -89,12 +110,13 @@ if __name__ == "__main__":
         loaded_data = yaml.safe_load(file)
 
     try:
-        board: Board = Board(loaded_data["game"]["board"], loaded_data["game"]["snake"])
+        board: Board = Board(
+            loaded_data["game"]["board"], loaded_data["game"]["snake"])
         screen: Screen = Screen(loaded_data["game"]["screen"])
     except Exception as e:
         print(f"{RED}Error: {e}{RESET}")
         sys.exit(1)
 
-    main_loop(board, screen)
+    main_loop(board, screen, gameConfig=loaded_data["game"])
 
     print(f"{CYAN}✌️ Game finished{RESET}")

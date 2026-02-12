@@ -43,6 +43,7 @@ class Screen:
     def draw_snake(self, board: Board):
         board_value = board.value
         coords = np.where(board_value == CellType.SNAKE_BODY.value)
+        coords = np.concatenate((coords, np.where(board_value == CellType.SNAKE_HEAD.value)), axis=1)
         coordinates = list(zip(coords[0], coords[1]))
         cell_size = self.board_width // board.size
         padding = 1
