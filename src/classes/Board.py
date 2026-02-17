@@ -31,6 +31,8 @@ class Board:
                 "Board size is too small for the snake's initial length.")
 
         direction = np.random.choice(["up", "down", "left", "right"])
+        if direction == "right":
+            self.snake.current_direction = Move.LEFT
         x = np.random.randint(self.snake.length, self.size - self.snake.length)
         y = np.random.randint(self.snake.length, self.size - self.snake.length)
         self.value[y, x] = CellType.SNAKE_HEAD.value
@@ -75,12 +77,31 @@ class Board:
         elif move == Move.RIGHT:
             new_head_pos = (self.snake.head_pos[0], self.snake.head_pos[1] + 1)
 
-        print(self.value[new_head_pos])
+        if self.value[new_head_pos] == CellType.RED_APPLE.value:
+            eating_red_apple = True
+        elif self.value[new_head_pos] == CellType.GREEN_APPLE.value:
+            eating_green_apple = True
+        elif self.value[new_head_pos] == CellType.WALL.value:
+            raise ValueError("Snake hit the wall.")
+        elif self.value[new_head_pos] == CellType.SNAKE_BODY.value:
+            raise ValueError("Snake hit itself.")
 
         self.snake.body.insert(0, new_head_pos)
         self.snake.head_pos = new_head_pos
+        if eating_red_apple:
+            self.snake.body.pop()
+            self.snake.body.pop()
+            self.place_apple(CellType.RED_APPLE)
+        elif not eating_green_apple:
+            self.snake.body.pop()
+        else:
+            self.place_apple(CellType.GREEN_APPLE)
 
-        self.snake.body.pop()
+        self.snake.length = len(self.snake.body)
+        self.snake.current_direction = move
+
+        if self.snake.length == 0:
+            raise ValueError("Snake has died.")
 
     def updateBoardValue(self):
         # remove all snake body and head

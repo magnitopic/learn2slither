@@ -51,6 +51,8 @@ def main_loop(board, screen, gameConfig):
     running = True
     paused = False
     move = None
+    opposite_pairs = {('up', 'down'), ('down', 'up'),
+                      ('left', 'right'), ('right', 'left')}
 
     number_keys = ["K_1", "K_2", "K_3", "K_4", "K_5"]
     movement_keys = {
@@ -78,7 +80,10 @@ def main_loop(board, screen, gameConfig):
                     game_speed = int(event.unicode)
                     print(f"{YELLOW}⚡ Game speed set to {game_speed}{RESET}")
                 elif event.key in movement_keys:
-                    move = movement_keys[event.key]
+                    print(board.snake.current_direction.value,
+                          movement_keys[event.key].value)
+                    if (board.snake.current_direction.value, movement_keys[event.key].value) not in opposite_pairs:
+                        move = movement_keys[event.key]
 
         # Run game logic
         if not paused:
@@ -90,7 +95,12 @@ def main_loop(board, screen, gameConfig):
                 move = board.snake.move()
 
             # Update board state
-            board.handleTurn(move)
+            try:
+                board.handleTurn(move)
+            except ValueError as e:
+                print(f"{RED}Game Over: {e}{RESET}")
+                running = False
+                continue
 
             # Draw everything
             screen.print_board(board)
