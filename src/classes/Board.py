@@ -53,7 +53,7 @@ class Board:
     def place_apple(self, type):
         empty_cells = np.argwhere(self.value == CellType.EMPTY.value)
         if len(empty_cells) == 0:
-            raise ValueError("No empty cells available to place an apple.")
+            return
         y, x = empty_cells[np.random.choice(len(empty_cells))]
         self.value[y, x] = type.value
 

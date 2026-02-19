@@ -6,6 +6,16 @@ import pygame
 import yaml
 import sys
 
+number_keys = ["K_1", "K_2", "K_3", "K_4", "K_5"]
+opposite_pairs = {('up', 'down'), ('down', 'up'),
+                  ('left', 'right'), ('right', 'left')}
+movement_keys = {
+    pygame.K_UP: Move.UP,
+    pygame.K_DOWN: Move.DOWN,
+    pygame.K_LEFT: Move.LEFT,
+    pygame.K_RIGHT: Move.RIGHT
+}
+
 
 def handleArgs():
     mode_found = False
@@ -45,48 +55,49 @@ def handleArgs():
     return values
 
 
+def handleEvents(event, running, paused, move, game_speed, step_by_step):
+
+    if event.type == pygame.QUIT:
+        running = False
+    elif event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_SPACE:
+            paused = not paused
+            if paused:
+                print(f"{YELLOW}⏸️ Game paused{RESET}")
+            else:
+                print(f"{GREEN}▶️ Game resumed{RESET}")
+        elif event.key == pygame.K_d:
+            step_by_step = True
+        elif event.key == pygame.K_ESCAPE:
+            running = False
+        elif event.key in [getattr(pygame, key) for key in number_keys]:
+            game_speed = int(event.unicode)
+            print(f"{YELLOW}⚡ Game speed set to {game_speed}{RESET}")
+        elif event.key in movement_keys:
+            print(board.snake.current_direction.value,
+                  movement_keys[event.key].value)
+            if (board.snake.current_direction.value, movement_keys[event.key].value) not in opposite_pairs:
+                move = movement_keys[event.key]
+
+    return running, paused, move, game_speed, step_by_step
+
+
 def main_loop(board, screen, gameConfig):
     clock = pygame.time.Clock()
     game_speed = 1  # Speed from 1-5
     running = True
     paused = False
     move = None
-    opposite_pairs = {('up', 'down'), ('down', 'up'),
-                      ('left', 'right'), ('right', 'left')}
-
-    number_keys = ["K_1", "K_2", "K_3", "K_4", "K_5"]
-    movement_keys = {
-        pygame.K_UP: Move.UP,
-        pygame.K_DOWN: Move.DOWN,
-        pygame.K_LEFT: Move.LEFT,
-        pygame.K_RIGHT: Move.RIGHT
-    }
+    step_by_step = False
 
     while running:
         # Handle events
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    paused = not paused
-                    if paused:
-                        print(f"{YELLOW}⏸️ Game paused{RESET}")
-                    else:
-                        print(f"{GREEN}▶️ Game resumed{RESET}")
-                elif event.key == pygame.K_ESCAPE:
-                    running = False
-                elif event.key in [getattr(pygame, key) for key in number_keys]:
-                    game_speed = int(event.unicode)
-                    print(f"{YELLOW}⚡ Game speed set to {game_speed}{RESET}")
-                elif event.key in movement_keys:
-                    print(board.snake.current_direction.value,
-                          movement_keys[event.key].value)
-                    if (board.snake.current_direction.value, movement_keys[event.key].value) not in opposite_pairs:
-                        move = movement_keys[event.key]
+            running, paused, move, game_speed, step_by_step = handleEvents(
+                event, running, paused, move, game_speed, step_by_step)
 
         # Run game logic
-        if not paused:
+        if not paused or step_by_step:
             print(board)
             print("_"*20)
 
@@ -104,6 +115,8 @@ def main_loop(board, screen, gameConfig):
 
             # Draw everything
             screen.print_board(board)
+
+            step_by_step = False
 
         # FPS
         clock.tick(game_speed * 2)
