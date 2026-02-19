@@ -9,7 +9,7 @@ class Board:
         self.num_green_apples = boardConfig["num_green_apples"]
         self.num_red_apples = boardConfig["num_red_apples"]
         self.value = np.full(
-            (self.size + 1, self.size + 1), CellType.EMPTY.value)
+            (self.size + 2, self.size + 2), CellType.EMPTY.value)
 
         # Place walls around the edges
         self.value[0, :] = CellType.WALL.value
@@ -23,32 +23,29 @@ class Board:
         self.place_initial_apples()
 
     def place_snake(self):
-        min_space = self.snake.length + 2
+        # Place snake in the middle of the board, facing right
+        y = self.size // 2
+        x = self.size // 2
+
         snake_body = []
 
-        if self.size < min_space:
+        # Check if there's enough space for the snake body
+        if x < self.snake.length:
             raise ValueError(
                 "Board size is too small for the snake's initial length.")
 
-        direction = np.random.choice(["up", "down", "left", "right"])
-        if direction == "right":
-            self.snake.current_direction = Move.LEFT
-        x = np.random.randint(self.snake.length, self.size - self.snake.length)
-        y = np.random.randint(self.snake.length, self.size - self.snake.length)
+        # Place head at the middle
         self.value[y, x] = CellType.SNAKE_HEAD.value
         snake_body.append((y, x))
         self.snake.head_pos = (y, x)
 
-        if direction in ["up", "down"]:
-            for i in range(self.snake.length - 1):
-                self.value[y + (i + 1), x] = CellType.SNAKE_BODY.value
-                snake_body.append((y + (i + 1), x))
-        else:
-            for i in range(self.snake.length - 1):
-                self.value[y, x + (i + 1)] = CellType.SNAKE_BODY.value
-                snake_body.append((y, x + (i + 1)))
+        # Body extends to the left (snake facing right)
+        for i in range(self.snake.length - 1):
+            self.value[y, x - (i + 1)] = CellType.SNAKE_BODY.value
+            snake_body.append((y, x - (i + 1)))
 
         self.snake.body = snake_body
+        self.snake.current_direction = Move.RIGHT
 
     def place_apple(self, type):
         empty_cells = np.argwhere(self.value == CellType.EMPTY.value)
