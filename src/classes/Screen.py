@@ -44,7 +44,7 @@ class Screen:
         board_value = board.value
         coords = np.where(board_value == CellType.SNAKE_BODY.value)
         coords = np.concatenate((coords, np.where(board_value == CellType.SNAKE_HEAD.value)), axis=1)
-        coordinates = list(zip(coords[0], coords[1]))
+        coordinates = list(zip(coords[0] - 1, coords[1] - 1))
         cell_size = self.board_width // board.size
         padding = 1
         for y, x in coordinates:
@@ -57,8 +57,8 @@ class Screen:
         board_value = board.value
         coords_green = np.where(board_value == CellType.GREEN_APPLE.value)
         coords_red = np.where(board_value == CellType.RED_APPLE.value)
-        coordinates_green = list(zip(coords_green[0], coords_green[1]))
-        coordinates_red = list(zip(coords_red[0], coords_red[1]))
+        coordinates_green = list(zip(coords_green[0] - 1, coords_green[1] - 1))
+        coordinates_red = list(zip(coords_red[0] - 1, coords_red[1] - 1))
 
         cell_size = self.board_width // board.size
         for y, x in coordinates_green:
