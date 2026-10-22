@@ -1,7 +1,7 @@
-from classes.Board import Board
-from classes.Screen import Screen
-from enums import Move
-from aux.colours import *
+from core.Board import Board
+from ui.Screen import Screen
+from aux.enums import Move
+from aux.colours import RED, GREEN, YELLOW, CYAN, RESET
 import pygame
 import yaml
 import sys
@@ -74,9 +74,8 @@ def handleEvents(event, running, paused, move, game_speed, step_by_step):
             game_speed = int(event.unicode)
             print(f"{YELLOW}⚡ Game speed set to {game_speed}{RESET}")
         elif event.key in movement_keys:
-            print(board.snake.current_direction.value,
-                  movement_keys[event.key].value)
-            if (board.snake.current_direction.value, movement_keys[event.key].value) not in opposite_pairs:
+            if (board.snake.current_direction.value,
+                    movement_keys[event.key].value) not in opposite_pairs:
                 move = movement_keys[event.key]
 
     return running, paused, move, game_speed, step_by_step

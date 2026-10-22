@@ -9,3 +9,15 @@ WHITE = "\033[0;37m"
 RESET = "\033[0m"
 GRAY = "\033[2;30m"
 BOLD = "\033[1m"
+
+
+"RED",
+"GREEN",
+"YELLOW",
+"BLUE",
+"PURPLE",
+"CYAN",
+"WHITE",
+"RESET",
+"GRAY",
+"BOLD",

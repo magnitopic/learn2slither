@@ -1,5 +1,5 @@
-from classes.Snake import Snake
-from enums import CellType, Move
+from core.Snake import Snake
+from aux.enums import CellType, Move
 import numpy as np
 
 

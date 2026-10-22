@@ -1,5 +1,5 @@
-from enums import CellType
-from .Board import Board
+from aux.enums import CellType
+from core.Board import Board
 import pygame
 import numpy as np
 
@@ -34,23 +34,31 @@ class Screen:
     def draw_grid(self, board: Board):
         cell_size = self.board_width // board.size
         for x in range(board.size + 1):
-            pygame.draw.line(self.screen, self.black, (self.offset_x + x * cell_size, self.offset_y),
-                             (self.offset_x + x * cell_size, self.offset_y + self.board_height))
+            pygame.draw.line(self.screen, self.black,
+                             (self.offset_x + x * cell_size, self.offset_y),
+                             (self.offset_x + x * cell_size,
+                              self.offset_y + self.board_height))
         for y in range(board.size + 1):
-            pygame.draw.line(self.screen, self.black, (self.offset_x, self.offset_y + y * cell_size),
-                             (self.offset_x + self.board_width, self.offset_y + y * cell_size))
+            pygame.draw.line(self.screen, self.black,
+                             (self.offset_x, self.offset_y + y * cell_size),
+                             (self.offset_x + self.board_width,
+                              self.offset_y + y * cell_size))
 
     def draw_snake(self, board: Board):
         board_value = board.value
         coords = np.where(board_value == CellType.SNAKE_BODY.value)
-        coords = np.concatenate((coords, np.where(board_value == CellType.SNAKE_HEAD.value)), axis=1)
+        coords = np.concatenate(
+            (coords,
+             np.where(board_value == CellType.SNAKE_HEAD.value)),
+            axis=1)
         coordinates = list(zip(coords[0] - 1, coords[1] - 1))
         cell_size = self.board_width // board.size
         padding = 1
         for y, x in coordinates:
             rect = pygame.Rect((self.offset_x + x * cell_size + padding + 1),
                                (self.offset_y + y * cell_size + padding + 1),
-                               cell_size - 3 * padding, cell_size - 3 * padding)
+                               cell_size - 3 * padding,
+                               cell_size - 3 * padding)
             pygame.draw.rect(self.screen, self.snake_colour, rect)
 
     def draw_apples(self, board: Board):
@@ -62,14 +70,16 @@ class Screen:
 
         cell_size = self.board_width // board.size
         for y, x in coordinates_green:
-            rect = pygame.Rect((self.offset_x + x * cell_size + cell_size // 7),
-                               (self.offset_y + y * cell_size + cell_size // 7),
-                               cell_size // 1.3, cell_size // 1.3)
+            rect = pygame.Rect(
+                (self.offset_x + x * cell_size + cell_size // 7),
+                (self.offset_y + y * cell_size + cell_size // 7),
+                cell_size // 1.3, cell_size // 1.3)
             pygame.draw.ellipse(self.screen, self.green_apple_colour, rect)
         for y, x in coordinates_red:
-            rect = pygame.Rect((self.offset_x + x * cell_size + cell_size // 7),
-                               (self.offset_y + y * cell_size + cell_size // 7),
-                               cell_size // 1.3, cell_size // 1.3)
+            rect = pygame.Rect(
+                (self.offset_x + x * cell_size + cell_size // 7),
+                (self.offset_y + y * cell_size + cell_size // 7),
+                cell_size // 1.3, cell_size // 1.3)
             pygame.draw.ellipse(self.screen, self.red_apple_colour, rect)
 
     def draw_stats(self):

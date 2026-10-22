@@ -1,4 +1,4 @@
-from enums import Move
+from aux.enums import Move
 
 
 class Snake:
