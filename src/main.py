@@ -97,7 +97,8 @@ def main_loop(board, screen, gameConfig):
 
         # Run game logic
         if not paused or step_by_step:
-            print(board)
+            """ print(board) """
+            print(board.snakeVision())
             print("_"*20)
 
             # Get snake move

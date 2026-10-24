@@ -125,3 +125,15 @@ class Board:
 
     def __str__(self):
         return "\n".join(" ".join(row) for row in self.value)
+
+    def snakeVision(self):
+        snakeHeadPos: tuple = self.snake.head_pos
+        vision = ""
+        for i in range(self.size + 2):
+            for j in range(self.size + 2):
+                if i == snakeHeadPos[0] or j == snakeHeadPos[1]:
+                    vision += self.value[i][j]
+                else:
+                    vision += " "
+            vision += "\n"
+        return vision
