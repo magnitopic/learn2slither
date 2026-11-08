@@ -55,7 +55,8 @@ def handleArgs():
     return values
 
 
-def handleEvents(event, running, paused, move, game_speed, step_by_step):
+def handleEvents(
+        board, event, running, paused, move, game_speed, step_by_step):
 
     if event.type == pygame.QUIT:
         running = False
@@ -95,7 +96,7 @@ def main_loop(board, screen, gameConfig):
         # Handle events
         for event in pygame.event.get():
             running, paused, move, game_speed, step_by_step = handleEvents(
-                event, running, paused, move, game_speed, step_by_step)
+                board, event, running, paused, move, game_speed, step_by_step)
 
         # Run game logic
         if not paused or step_by_step:

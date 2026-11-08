@@ -44,11 +44,11 @@ class Board:
         dy, dx = deltas[self.snake.current_direction]
 
         def axis_range(d):
-            if d == 1:    # moving toward higher indices: body trails toward lower ones
+            if d == 1:
                 return self.snake.length, self.size - margin
-            if d == -1:   # moving toward lower indices: body trails toward higher ones
+            if d == -1:
                 return 1 + margin, self.size - self.snake.length + 1
-            return 1, self.size  # this axis is not affected
+            return 1, self.size
 
         min_x, max_x = axis_range(dx)
         min_y, max_y = axis_range(dy)
