@@ -14,7 +14,7 @@ game:
             bg: [240, 240, 230]
 
     snake:
-        initial_length: 2
+        initial_length: 3
         show_vision: true # Visualize the snake's POV in terminal
 
     board:

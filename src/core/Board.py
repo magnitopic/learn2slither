@@ -24,9 +24,9 @@ class Board:
         self.place_initial_apples()
 
     def place_snake(self):
-        # Check that board if big enough for snake len
         margin = 1
 
+        # Check that board if big enough for snake len
         if self.size < self.snake.length + margin:
             raise ValueError(
                 "Board size is too small for the snake's initial length.")
@@ -34,54 +34,38 @@ class Board:
         self.snake.current_direction = rnd.choice(
             [Move.LEFT, Move.RIGHT, Move.UP, Move.DOWN])
 
-        if self.snake.current_direction == Move.LEFT:
-            min_x = 2
-            min_y = 1
-            max_x = self.size - self.snake.length + margin
-            max_y = self.size
-            def multiplier(x, y, i): return y, x - (i - 1)
-        elif self.snake.current_direction == Move.RIGHT:
-            min_x = self.snake.length
-            min_y = 1
-            max_x = self.size - 1
-            max_y = self.size
-            def multiplier(x, y, i): return y, x - (i + margin)
-        elif self.snake.current_direction == Move.UP:
-            min_x = 1
-            min_y = 2
-            max_x = self.size
-            max_y = self.size - self.snake.length + margin
-            def multiplier(x, y, i): return y - (i + margin), x
-        elif self.snake.current_direction == Move.DOWN:
-            min_x = 1
-            min_y = self.snake.length
-            max_x = self.size
-            max_y = self.size - 1
+        # How far one step moves in this direction, as (dy, dx)
+        deltas = {
+            Move.UP:    (-1, 0),
+            Move.DOWN:  (1, 0),
+            Move.LEFT:  (0, -1),
+            Move.RIGHT: (0, 1),
+        }
+        dy, dx = deltas[self.snake.current_direction]
+
+        def axis_range(d):
+            if d == 1:    # moving toward higher indices: body trails toward lower ones
+                return self.snake.length, self.size - margin
+            if d == -1:   # moving toward lower indices: body trails toward higher ones
+                return 1 + margin, self.size - self.snake.length + 1
+            return 1, self.size  # this axis is not affected
+
+        min_x, max_x = axis_range(dx)
+        min_y, max_y = axis_range(dy)
 
         x = rnd.randint(min_x, max_x)
         y = rnd.randint(min_y, max_y)
 
-        snake_body = []
-
         # Place head
         self.value[y, x] = CellType.SNAKE_HEAD.value
         self.snake.head_pos = (y, x)
-        snake_body.append((y, x))
+        snake_body = [(y, x)]
 
-        # Body extends to the left (snake facing right)
-        """ if self.snake.current_direction == Move.LEFT:
-            multiplier = lambda i: (i + 1)
-        elif self.snake.current_direction == Move.RIGHT:
-            multiplier = lambda: (i - 1)
-        elif self.snake.current_direction == Move.UP:
-            multiplier = lambda: (i + 1)
-        elif self.snake.current_direction == Move.DOWN: 
-            multiplier = lambda: (i + 1)
-        """
-
-        for i in range(self.snake.length - 1):
-            self.value[multiplier(x, y, i)] = CellType.SNAKE_BODY.value
-            snake_body.append(multiplier(x, y, i))
+        # Place body, opposite to the movement direction
+        for i in range(1, self.snake.length):
+            pos = (y - dy * i, x - dx * i)
+            self.value[pos] = CellType.SNAKE_BODY.value
+            snake_body.append(pos)
 
         self.snake.body = snake_body
 
