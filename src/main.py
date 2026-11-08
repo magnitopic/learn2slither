@@ -99,9 +99,9 @@ def main_loop(board, screen, gameConfig):
 
         # Run game logic
         if not paused or step_by_step:
-            """ print(board) """
-            print(board.snakeVision())
-            print("_"*20)
+            if board.snake.show_vision:
+                print(board.snakeVision())
+                print("_"*20)
 
             # Get snake move
             if not gameConfig["human_player"]:

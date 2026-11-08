@@ -71,9 +71,7 @@ class Board:
 
     def place_apple(self, type):
         empty_cells = np.argwhere(self.value == CellType.EMPTY.value)
-        """         print(empty_cells)
-        print(len(empty_cells)) 
-        """
+
         if len(empty_cells) == 0:
             return
         y, x = empty_cells[np.random.choice(len(empty_cells))]
