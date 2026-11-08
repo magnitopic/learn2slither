@@ -1,6 +1,7 @@
 from core.Snake import Snake
 from aux.enums import CellType, Move
 import numpy as np
+import random as rnd
 
 
 class Board:
@@ -23,38 +24,82 @@ class Board:
         self.place_initial_apples()
 
     def place_snake(self):
-        # Place snake in the middle of the board, facing right
-        y = self.size // 2
-        x = self.size // 2
+        # Check that board if big enough for snake len
+        margin = 1
 
-        snake_body = []
-
-        # Check if there's enough space for the snake body
-        if x < self.snake.length:
+        if self.size < self.snake.length + margin:
             raise ValueError(
                 "Board size is too small for the snake's initial length.")
 
-        # Place head at the middle
+        self.snake.current_direction = rnd.choice(
+            [Move.LEFT, Move.RIGHT, Move.UP, Move.DOWN])
+
+        if self.snake.current_direction == Move.LEFT:
+            min_x = 2
+            min_y = 1
+            max_x = self.size - self.snake.length + margin
+            max_y = self.size
+            def multiplier(x, y, i): return y, x - (i - 1)
+        elif self.snake.current_direction == Move.RIGHT:
+            min_x = self.snake.length
+            min_y = 1
+            max_x = self.size - 1
+            max_y = self.size
+            def multiplier(x, y, i): return y, x - (i + margin)
+        elif self.snake.current_direction == Move.UP:
+            min_x = 1
+            min_y = 2
+            max_x = self.size
+            max_y = self.size - self.snake.length + margin
+            def multiplier(x, y, i): return y - (i + margin), x
+        elif self.snake.current_direction == Move.DOWN:
+            min_x = 1
+            min_y = self.snake.length
+            max_x = self.size
+            max_y = self.size - 1
+
+        x = rnd.randint(min_x, max_x)
+        y = rnd.randint(min_y, max_y)
+
+        snake_body = []
+
+        # Place head
         self.value[y, x] = CellType.SNAKE_HEAD.value
-        snake_body.append((y, x))
         self.snake.head_pos = (y, x)
+        snake_body.append((y, x))
 
         # Body extends to the left (snake facing right)
+        """ if self.snake.current_direction == Move.LEFT:
+            multiplier = lambda i: (i + 1)
+        elif self.snake.current_direction == Move.RIGHT:
+            multiplier = lambda: (i - 1)
+        elif self.snake.current_direction == Move.UP:
+            multiplier = lambda: (i + 1)
+        elif self.snake.current_direction == Move.DOWN: 
+            multiplier = lambda: (i + 1)
+        """
+
         for i in range(self.snake.length - 1):
-            self.value[y, x - (i + 1)] = CellType.SNAKE_BODY.value
-            snake_body.append((y, x - (i + 1)))
+            self.value[multiplier(x, y, i)] = CellType.SNAKE_BODY.value
+            snake_body.append(multiplier(x, y, i))
 
         self.snake.body = snake_body
-        self.snake.current_direction = Move.RIGHT
 
     def place_apple(self, type):
         empty_cells = np.argwhere(self.value == CellType.EMPTY.value)
+        """         print(empty_cells)
+        print(len(empty_cells)) 
+        """
         if len(empty_cells) == 0:
             return
         y, x = empty_cells[np.random.choice(len(empty_cells))]
         self.value[y, x] = type.value
 
     def place_initial_apples(self):
+        empty_cells = np.argwhere(self.value == CellType.EMPTY.value)
+        if len(empty_cells) < self.num_green_apples + self.num_red_apples:
+            raise ValueError("Not enough space for apples")
+
         for _ in range(self.num_green_apples):
             self.place_apple(CellType.GREEN_APPLE)
         for _ in range(self.num_red_apples):

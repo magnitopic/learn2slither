@@ -14,10 +14,10 @@ game:
             bg: [240, 240, 230]
 
     snake:
-        initial_length: 3
+        initial_length: 2
         show_vision: true # Visualize the snake's POV in terminal
 
     board:
-        size: 10 # Playable area. Recommended range [6-20+]
+        size: 4 # Playable area. Recommended range [6-20+]
         num_green_apples: 2
         num_red_apples: 1

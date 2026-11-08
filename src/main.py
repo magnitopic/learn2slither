@@ -89,6 +89,8 @@ def main_loop(board, screen, gameConfig):
     move = None
     step_by_step = False
 
+    screen.print_board(board)
+
     while running:
         # Handle events
         for event in pygame.event.get():
