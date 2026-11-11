@@ -1,7 +1,4 @@
 game:
-    max_steps: 1000
-    human_player: false
-
     screen:
         size_px: 900
         show_stats: true
@@ -21,3 +18,24 @@ game:
         size: 10 # Playable area. Recommended range [6-20+]
         num_green_apples: 2
         num_red_apples: 1
+
+ai:
+    model:
+        activation: "relu"
+
+    agent:
+        learning_rate: 0.01
+
+    rewards:
+        green_apple: 10
+        red_apple: -10
+        death: -100
+        stop: 0.1
+
+        use_distance_rewards: true
+        closer_to_apple: 1
+        farther_to_apple: -1
+
+    training:
+        max_steps: 1000
+        target_avg_len: 35
