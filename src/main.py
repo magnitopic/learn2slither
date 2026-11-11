@@ -102,19 +102,27 @@ def main_loop(board, screen, gameConfig):
         if not paused or step_by_step:
             if board.snake.show_vision:
                 print(board.snakeVision())
+                print(board.snake.current_direction)
                 print("_"*20)
 
             # Get snake move
-            if not gameConfig["human_player"]:
-                move = board.snake.move()
+            """ if not gameConfig["human_player"]:
+                move = board.snake.move() """
 
             # Update board state
             try:
                 board.handleTurn(move)
             except ValueError as e:
-                print(f"{RED}Game Over: {e}{RESET}")
-                running = False
-                continue
+                # if game ends and it's a human player, end the game
+                if gameConfig["human_player"]:
+                    print(f"{RED}Game Over: {e}{RESET}")
+                    running = False
+                    continue
+                else: # if game ends and it's IA, reset the game
+                    print(f"{YELLOW}RESET: {e}{RESET}")
+                    print("-"*20)
+                    move = None
+                    board.reset()
 
             # Draw everything
             screen.print_board(board)

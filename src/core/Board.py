@@ -7,6 +7,7 @@ import random as rnd
 class Board:
     def __init__(self, boardConfig, snakeConfig):
         self.size = boardConfig["size"]
+        self.snake_initial_len = snakeConfig.get("initial_length", 3)
         self.num_green_apples = boardConfig["num_green_apples"]
         self.num_red_apples = boardConfig["num_red_apples"]
         self.value = np.full(
@@ -147,6 +148,22 @@ class Board:
         self.moveSnake(move)
 
         self.updateBoardValue()
+
+    def reset(self):
+        self.value = np.full(
+            (self.size + 2, self.size + 2), CellType.EMPTY.value)
+
+        # Place walls around the edges
+        self.value[0, :] = CellType.WALL.value
+        self.value[-1, :] = CellType.WALL.value
+        self.value[:, 0] = CellType.WALL.value
+        self.value[:, -1] = CellType.WALL.value
+
+        self.snake.length = self.snake_initial_len
+        self.snake.body = []
+
+        self.place_snake()
+        self.place_initial_apples()
 
     """ Aux functions """
 
