@@ -1,7 +1,7 @@
 game:
     screen:
         size_px: 900
-        show_stats: true
+        show_stats: false
         show_grid: true
 
         colour:

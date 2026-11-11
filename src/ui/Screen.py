@@ -85,15 +85,21 @@ class Screen:
     def draw_stats(self):
         pass
 
-    def draw_name(self):
+    def draw_name(self, is_main_screen=False):
         text1 = "learn2slither"
         text2 = "By alaparic"
         text1_surface = self.title_font.render(text1, True, self.black)
         text2_surface = self.font2.render(text2, True, self.black)
-        self.draw_text(text1, self.size // 2 - text1_surface.get_width() //
-                       2, self.size * 0.8, self.title_font, self.black)
-        self.draw_text(text2, self.size // 2 - text2_surface.get_width() //
-                       2, self.size * 0.8 + 50, self.font2, self.black)
+        if is_main_screen:
+            self.draw_text(text1, self.size // 2 - text1_surface.get_width() //
+                           2, self.size * 0.2, self.title_font, self.black)
+            self.draw_text(text2, self.size // 2 - text2_surface.get_width() //
+                           2, self.size * 0.2 + 50, self.font2, self.black)
+        else:
+            self.draw_text(text1, self.size // 2 - text1_surface.get_width() //
+                           2, self.size * 0.8, self.title_font, self.black)
+            self.draw_text(text2, self.size // 2 - text2_surface.get_width() //
+                           2, self.size * 0.8 + 50, self.font2, self.black)
 
     def print_board(self, board: Board):
         self.screen.fill(self.bg_colour)
@@ -117,6 +123,11 @@ class Screen:
         else:
             self.draw_name()
 
+        pygame.display.flip()
+
+    def print_lobby(self):
+        self.screen.fill(self.bg_colour)
+        self.draw_name(True)
         pygame.display.flip()
 
     """ Aux functions """

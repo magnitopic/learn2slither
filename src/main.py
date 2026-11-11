@@ -118,7 +118,7 @@ def main_loop(board, screen, gameConfig):
                     print(f"{RED}Game Over: {e}{RESET}")
                     running = False
                     continue
-                else: # if game ends and it's IA, reset the game
+                else:  # if game ends and it's IA, reset the game
                     print(f"{YELLOW}RESET: {e}{RESET}")
                     print("-"*20)
                     move = None

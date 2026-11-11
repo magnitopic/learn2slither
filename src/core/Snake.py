@@ -8,6 +8,3 @@ class Snake:
         self.current_direction: Move = Move.RIGHT
         self.body = []
         self.head_pos = None
-
-    def move(self):
-        return None
