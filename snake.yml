@@ -1,8 +1,8 @@
 game:
     screen:
         size_px: 900
-        show_stats: false
-        show_grid: true
+        show_stats: false # show stats panel (bonus)
+        show_grid: true # show grid lines
 
         colour:
             snake: [125, 100, 225]
@@ -15,9 +15,10 @@ game:
         show_vision: true # Visualize the snake's POV in terminal
 
     board:
-        size: 10 # Playable area. Recommended range [6-20+]
+        size: 10 # Playable area. Recommended range [6-20+] (bonus)
         num_green_apples: 2
         num_red_apples: 1
+        visual: true # show the game in a window
 
 ai:
     model:
@@ -38,4 +39,4 @@ ai:
 
     training:
         max_steps: 1000
-        target_avg_len: 35
+        target_avg_len: 35 # Length of snake we want to achieve (bonus)

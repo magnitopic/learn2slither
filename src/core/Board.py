@@ -165,6 +165,16 @@ class Board:
         self.place_snake()
         self.place_initial_apples()
 
+    def get_snake_vision(self):
+        
+
+    def get_state(self):
+        '''
+        Returns the current state of the board to be the value vector for the
+        neural network.
+        '''
+        pass
+
     """ Aux functions """
 
     def __str__(self):

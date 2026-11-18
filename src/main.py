@@ -4,6 +4,7 @@ from aux.enums import Move
 from aux.colours import RED, GREEN, YELLOW, CYAN, RESET
 import pygame
 import yaml
+import os
 import sys
 
 number_keys = ["K_1", "K_2", "K_3", "K_4", "K_5"]
@@ -18,39 +19,75 @@ movement_keys = {
 
 
 def handleArgs():
-    mode_found = False
+    '''
+    Arguments:
+
+    - sessions <int>
+    - save <path>
+    - load <path>
+    - dontlearn
+    - visual <on/off>
+    - stepbystep
+    - config <path>
+    '''
+
     values = {
-        "sessions": 0,
-        "path": "",
-        "mode": "",
+        "sessions": None,
+        "save": None,
+        "load": None,
+        "dontlearn": False,
+        "stepbystep": False,
+        "config": "snake.yml",
         "visual": "on"
     }
-    args = list(zip(sys.argv[1::2], sys.argv[2::2]))
+    with_value = {"sessions", "save", "load", "visual", "config"}
+    flags = {"dontlearn", "stepbystep"}
 
-    try:
-        for arg in args:
-            if arg[0] == "-sessions":
-                values["sessions"] = int(arg[1])
-            elif arg[0] == "-save":
-                values["save_path"] = arg[1]
-                mode_found = True
-            elif arg[0] == "-load":
-                values["load_path"] = arg[1]
-                mode_found = True
-            elif arg[0] == "-visual":
-                values["visual"] = arg[1]
-                if values["visual"] not in ["on", "off"]:
-                    raise ValueError()
-    except IndexError:
-        print(f"{RED}Error: Missing value for argument.{RESET}")
-        sys.exit(1)
-    except ValueError:
-        print(f"{RED}Error: Invalid value type for argument.{RESET}")
+    def fail(message):
+        print(f"{RED}Error: {message}{RESET}")
         sys.exit(1)
 
-    if not mode_found:
-        print(f"{RED}Error: No mode specified. Use -save or -load.{RESET}")
-        sys.exit(1)
+    argv = sys.argv[1:]
+    i = 0
+    while i < len(argv):
+        name = argv[i].lstrip("-").replace("-", "")
+        if not argv[i].startswith("-") or name not in with_value | flags:
+            fail(f"Unknown argument '{argv[i]}'.")
+
+        if name in flags:
+            values[name] = True
+            i += 1
+            continue
+
+        if i + 1 >= len(argv) or argv[i + 1].startswith("-"):
+            fail(f"Missing value for argument '{argv[i]}'.")
+        values[name] = argv[i + 1]
+        i += 2
+
+    if values["sessions"] is not None:
+        try:
+            values["sessions"] = int(values["sessions"])
+        except ValueError:
+            fail("'-sessions' must be an integer.")
+        if values["sessions"] < 1:
+            fail("'-sessions' must be at least 1.")
+
+    if values["visual"] not in ("on", "off"):
+        fail("'-visual' must be 'on' or 'off'.")
+
+    for key in ("load", "config"):
+        if values[key] is not None and not os.path.isfile(values[key]):
+            fail(f"File '{values[key]}' (-{key}) does not exist.")
+
+    # Argument combinations that make no sense
+    if values["dontlearn"] and values["load"] is None:
+        fail("'-dontlearn' needs a model to run. Use -load <path>.")
+    if values["stepbystep"] and values["visual"] == "off":
+        fail("'-stepbystep' needs the display. Use -visual on.")
+    if (values["visual"] == "off" and not values["dontlearn"]
+            and values["save"] is None):
+        fail("Training without display and without '-save' would discard "
+             "the result. Use -save <path>.")
 
     return values
 
