@@ -1,5 +1,5 @@
 from core.Snake import Snake
-from aux.enums import CellType, Move
+from aux.enums import CellType, GameMode, Move
 import numpy as np
 import random as rnd
 
@@ -14,6 +14,15 @@ class Board:
             (self.size + 2, self.size + 2), CellType.EMPTY.value)
         self.show_lobby = argsConfig["showlobby"]
 
+        # Game mode determines whether the player is human or AI.
+        # And if AI, if we are training or testing (see GameMode).
+        # With the lobby it stays None until a button is pressed,
+        # without it, it is decided by the arguments.
+        self.game_mode = None
+        if not self.show_lobby:
+            self.set_game_mode(GameMode.AI_TEST if argsConfig["dontlearn"]
+                               else GameMode.AI_TRAIN)
+
         # Place walls around the edges
         self.value[0, :] = CellType.WALL.value
         self.value[-1, :] = CellType.WALL.value
@@ -24,6 +33,10 @@ class Board:
 
         self.place_snake()
         self.place_initial_apples()
+
+    def set_game_mode(self, game_mode: GameMode):
+        self.game_mode = game_mode
+        self.show_lobby = False
 
     def place_snake(self):
         margin = 1

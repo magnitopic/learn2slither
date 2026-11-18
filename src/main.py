@@ -1,6 +1,6 @@
 from core.program_arguments import handleArgs, loadProgramConfig
 from ui.Screen import Screen
-from aux.enums import Move
+from aux.enums import GameMode, Move
 from aux.colours import RED, GREEN, YELLOW, CYAN, RESET
 import pygame
 import yaml
@@ -17,34 +17,46 @@ movement_keys = {
 }
 
 
-def handleEvents(
-        board, event, running, paused, move, game_speed, step_by_step):
+def handleEvents(board, screen, event, running, paused, move, game_speed,
+                 step_by_step):
 
     if event.type == pygame.QUIT:
         running = False
+    elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+        if board.show_lobby:
+            choice = screen.get_lobby_choice(event.pos)
+            if choice == "human":
+                board.set_game_mode(GameMode.HUMAN)
+            elif choice == "ai":
+                # The lobby is only shown when not training
+                board.set_game_mode(GameMode.AI_TEST)
+            elif choice == "exit":
+                running = False
     elif event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_SPACE:
-            paused = not paused
-            if paused:
-                print(f"{YELLOW}⏸️ Game paused{RESET}")
-            else:
-                print(f"{GREEN}▶️ Game resumed{RESET}")
-        elif event.key == pygame.K_d:
-            step_by_step = True
-        elif event.key == pygame.K_ESCAPE:
+        if event.key == pygame.K_ESCAPE:
+            print(f"{CYAN}✌️ Game exited{RESET}")
             running = False
-        elif event.key in [getattr(pygame, key) for key in number_keys]:
-            game_speed = int(event.unicode)
-            print(f"{YELLOW}⚡ Game speed set to {game_speed}{RESET}")
-        elif event.key in movement_keys:
-            if (board.snake.current_direction.value,
-                    movement_keys[event.key].value) not in opposite_pairs:
-                move = movement_keys[event.key]
-
+        elif not board.show_lobby and board.game_mode == GameMode.HUMAN:
+            if event.key == pygame.K_SPACE:
+                paused = not paused
+                if paused:
+                    print(f"{YELLOW}⏸️ Game paused{RESET}")
+                else:
+                    print(f"{GREEN}▶️ Game resumed{RESET}")
+            elif event.key == pygame.K_d:
+                step_by_step = True
+            elif event.key in [getattr(pygame, key) for key in number_keys]:
+                game_speed = int(event.unicode)
+                print(f"{YELLOW}⚡ Game speed set to {game_speed}{RESET}")
+            elif event.key in movement_keys:
+                if (board.snake.current_direction.value,
+                        movement_keys[event.key].value) not in opposite_pairs:
+                    move = movement_keys[event.key]
     return running, paused, move, game_speed, step_by_step
 
 
 def game_loop(board, screen, move):
+    running = True
     if board.snake.show_vision:
         print(board.snakeVision())
         print(board.snake.current_direction)
@@ -72,6 +84,8 @@ def game_loop(board, screen, move):
     # Draw everything
     screen.draw_board(board)
 
+    return running
+
 
 def main_loop(board, screen):
     clock = pygame.time.Clock()
@@ -88,7 +102,16 @@ def main_loop(board, screen):
         # Handle events
         for event in pygame.event.get():
             running, paused, move, game_speed, step_by_step = handleEvents(
-                board, event, running, paused, move, game_speed, step_by_step)
+                board, screen,
+                event,
+                running,
+                paused,
+                move,
+                game_speed,
+                step_by_step
+            )
+        if not running:
+            break
 
         # Run game logic
         if board.show_lobby:
@@ -96,7 +119,7 @@ def main_loop(board, screen):
             """ board.show_lobby = False """
         else:
             if not paused or step_by_step:
-                game_loop(board, screen, move)
+                running = game_loop(board, screen, move)
                 step_by_step = False
 
         # FPS

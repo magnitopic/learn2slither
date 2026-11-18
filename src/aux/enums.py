@@ -10,6 +10,12 @@ class CellType(Enum):
     RED_APPLE = 'R'     # Red apple (-1 length)
 
 
+class GameMode(Enum):
+    HUMAN = 'human'         # A human plays with the keyboard
+    AI_TRAIN = 'ai_train'   # The AI plays and learns
+    AI_TEST = 'ai_test'     # The AI plays without learning
+
+
 class Move(Enum):
     UP = 'up'
     DOWN = 'down'

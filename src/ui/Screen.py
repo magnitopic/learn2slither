@@ -30,6 +30,10 @@ class Screen:
         self.snake_colour = screenConfig["colour"]["snake"]
         self.green_apple_colour = screenConfig["colour"]["apple_green"]
         self.red_apple_colour = screenConfig["colour"]["apple_red"]
+        self.button_colour = screenConfig["colour"]["button"]
+
+        # Clickable areas of the lobby, filled when drawing it
+        self.lobby_buttons = {}
 
     def draw_grid(self, board: Board):
         cell_size = self.board_width // board.size
@@ -125,10 +129,39 @@ class Screen:
 
         pygame.display.flip()
 
+    def draw_button(self, text, x, y, width, height, font, color):
+        button_rect = pygame.Rect(x, y, width, height)
+        pygame.draw.rect(self.screen, color, button_rect)
+        text_surface = font.render(text, True, self.black)
+        text_x = x + (width - text_surface.get_width()) // 2
+        text_y = y + (height - text_surface.get_height()) // 2
+
+        self.screen.blit(text_surface, (text_x, text_y))
+
+        return button_rect
+
     def draw_lobby(self):
         self.screen.fill(self.bg_colour)
         self.draw_name(True)
+        self.lobby_buttons = {
+            "ai": self.draw_button(
+                "AI Player", self.size // 2 - 100, self.size * 0.5,
+                200, 50, self.font2, self.button_colour),
+            "human": self.draw_button(
+                "Human Player", self.size // 2 - 100, self.size * 0.6,
+                200, 50, self.font2, self.button_colour),
+            "exit": self.draw_button(
+                "Exit", self.size // 2 - 100, self.size * 0.7,
+                200, 50, self.font2, self.button_colour),
+        }
         pygame.display.flip()
+
+    def get_lobby_choice(self, pos):
+        """ Name of the lobby button at pos ("ai", "human", "exit") """
+        for name, rect in self.lobby_buttons.items():
+            if rect.collidepoint(pos):
+                return name
+        return None
 
     """ Aux functions """
 
