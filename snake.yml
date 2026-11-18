@@ -16,6 +16,7 @@ game:
         show_vision: true # Visualize the snake's POV in terminal
 
     board:
+        step_by_step: false
         size: 10 # Playable area. Recommended range [6-20+] (bonus)
         num_green_apples: 2
         num_red_apples: 1

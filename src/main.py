@@ -91,9 +91,9 @@ def main_loop(board, screen):
     clock = pygame.time.Clock()
     game_speed = 1  # Speed from 1-5
     running = True
-    paused = False
+    paused = board.step_by_step
     move = None
-    step_by_step = False
+    step_by_step = board.step_by_step
 
     # Draw initial board
     # screen.draw_board(board)
@@ -116,7 +116,6 @@ def main_loop(board, screen):
         # Run game logic
         if board.show_lobby:
             screen.draw_lobby()
-            """ board.show_lobby = False """
         else:
             if not paused or step_by_step:
                 running = game_loop(board, screen, move)

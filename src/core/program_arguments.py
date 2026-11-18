@@ -109,6 +109,7 @@ def loadProgramConfig():
             loaded_data["game"]["screen"]
         )
     except Exception as e:
+        print("wtf")
         print(f"{RED}Error: {e}{RESET}")
         sys.exit(1)
 

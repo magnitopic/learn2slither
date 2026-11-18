@@ -13,6 +13,7 @@ class Board:
         self.value = np.full(
             (self.size + 2, self.size + 2), CellType.EMPTY.value)
         self.show_lobby = argsConfig["showlobby"]
+        self.step_by_step = boardConfig['step_by_step'] | False
 
         # Game mode determines whether the player is human or AI.
         # And if AI, if we are training or testing (see GameMode).
