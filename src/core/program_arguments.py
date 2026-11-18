@@ -33,7 +33,8 @@ def handleArgs():
         "dontlearn": False,
         "stepbystep": False,
         "config": "snake.yml",
-        "visual": "on"
+        "visual": "on",
+        "showlobby": False  # derived, not an argument
     }
     with_value = {"sessions", "save", "load", "visual", "config"}
     flags = {"dontlearn", "stepbystep"}
@@ -84,21 +85,29 @@ def handleArgs():
         fail("Training without display and without '-save' would discard "
              "the result. Use -save <path>.")
 
+    # Lobby only with the display on and when not training
+    values["showlobby"] = values["visual"] == "on" and values["dontlearn"]
+
     return values
 
 
-def loadProgramConfig(path):
+def loadProgramConfig():
     # Get arguments
     program_args = handleArgs()
 
     # Get data from yaml file
-    with open('snake.yml', 'r') as file:
+    with open(program_args["config"], 'r') as file:
         loaded_data = yaml.safe_load(file)
 
     try:
         board: Board = Board(
-            loaded_data["game"]["board"], loaded_data["game"]["snake"])
-        screen: Screen = Screen(loaded_data["game"]["screen"])
+            loaded_data["game"]["board"],
+            loaded_data["game"]["snake"],
+            program_args
+        )
+        screen: Screen = Screen(
+            loaded_data["game"]["screen"]
+        )
     except Exception as e:
         print(f"{RED}Error: {e}{RESET}")
         sys.exit(1)

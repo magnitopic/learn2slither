@@ -5,13 +5,14 @@ import random as rnd
 
 
 class Board:
-    def __init__(self, boardConfig, snakeConfig):
+    def __init__(self, boardConfig, snakeConfig, argsConfig):
         self.size = boardConfig["size"]
         self.snake_initial_len = snakeConfig.get("initial_length", 3)
         self.num_green_apples = boardConfig["num_green_apples"]
         self.num_red_apples = boardConfig["num_red_apples"]
         self.value = np.full(
             (self.size + 2, self.size + 2), CellType.EMPTY.value)
+        self.show_lobby = argsConfig["showlobby"]
 
         # Place walls around the edges
         self.value[0, :] = CellType.WALL.value

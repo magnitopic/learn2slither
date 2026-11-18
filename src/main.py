@@ -44,7 +44,36 @@ def handleEvents(
     return running, paused, move, game_speed, step_by_step
 
 
-def main_loop(board, screen, gameConfig):
+def game_loop(board, screen, move):
+    if board.snake.show_vision:
+        print(board.snakeVision())
+        print(board.snake.current_direction)
+        print("_"*20)
+
+    # Get snake move
+    """ if not gameConfig["human_player"]:
+                move = board.snake.move() """
+
+    # Update board state
+    try:
+        board.handleTurn(move)
+    except ValueError as e:
+        # if game ends and it's a human player, end the game
+        """ if gameConfig["human_player"]: """
+        print(f"{RED}Game Over: {e}{RESET}")
+        running = False
+        return
+        """ else:  # if game ends and it's IA, reset the game
+            print(f"{YELLOW}RESET: {e}{RESET}")
+            print("-"*20)
+            move = None
+            board.reset() """
+
+    # Draw everything
+    screen.draw_board(board)
+
+
+def main_loop(board, screen):
     clock = pygame.time.Clock()
     game_speed = 1  # Speed from 1-5
     running = True
@@ -52,7 +81,8 @@ def main_loop(board, screen, gameConfig):
     move = None
     step_by_step = False
 
-    screen.print_board(board)
+    # Draw initial board
+    # screen.draw_board(board)
 
     while running:
         # Handle events
@@ -61,35 +91,13 @@ def main_loop(board, screen, gameConfig):
                 board, event, running, paused, move, game_speed, step_by_step)
 
         # Run game logic
-        if not paused or step_by_step:
-            if board.snake.show_vision:
-                print(board.snakeVision())
-                print(board.snake.current_direction)
-                print("_"*20)
-
-            # Get snake move
-            """ if not gameConfig["human_player"]:
-                move = board.snake.move() """
-
-            # Update board state
-            try:
-                board.handleTurn(move)
-            except ValueError as e:
-                # if game ends and it's a human player, end the game
-                if gameConfig["human_player"]:
-                    print(f"{RED}Game Over: {e}{RESET}")
-                    running = False
-                    continue
-                else:  # if game ends and it's IA, reset the game
-                    print(f"{YELLOW}RESET: {e}{RESET}")
-                    print("-"*20)
-                    move = None
-                    board.reset()
-
-            # Draw everything
-            screen.print_board(board)
-
-            step_by_step = False
+        if board.show_lobby:
+            screen.draw_lobby()
+            """ board.show_lobby = False """
+        else:
+            if not paused or step_by_step:
+                game_loop(board, screen, move)
+                step_by_step = False
 
         # FPS
         clock.tick(game_speed * 2)
@@ -99,8 +107,8 @@ def main_loop(board, screen, gameConfig):
 
 if __name__ == "__main__":
 
-    args = loadProgramConfig()
+    program_args, loaded_data, board, screen = loadProgramConfig()
 
-    main_loop(board, screen, gameConfig=loaded_data["game"])
+    main_loop(board, screen)
 
     print(f"{CYAN}✌️ Game finished{RESET}")
