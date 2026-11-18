@@ -166,7 +166,7 @@ class Board:
         self.place_initial_apples()
 
     def get_snake_vision(self):
-        
+        pass
 
     def get_state(self):
         '''
