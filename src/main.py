@@ -34,7 +34,6 @@ def handleEvents(board, screen, event, running, paused, move, game_speed,
                 running = False
     elif event.type == pygame.KEYDOWN:
         if event.key == pygame.K_ESCAPE:
-            print(f"{CYAN}✌️ Game exited{RESET}")
             running = False
         elif not board.show_lobby and board.game_mode == GameMode.HUMAN:
             if event.key == pygame.K_SPACE:
@@ -55,36 +54,34 @@ def handleEvents(board, screen, event, running, paused, move, game_speed,
     return running, paused, move, game_speed, step_by_step
 
 
-def game_loop(board, screen, move):
-    running = True
+def game_loop(board, screen, move, running):
     if board.snake.show_vision:
         print(board.snakeVision())
         print(board.snake.current_direction)
         print("_"*20)
 
-    # Get snake move
-    """ if not gameConfig["human_player"]:
-                move = board.snake.move() """
-
     # Update board state
     try:
+        if board.game_mode in [GameMode.AI_TRAIN, GameMode.AI_TEST]:
+            """ move = board.handleTurnAI() """
+            pass
         board.handleTurn(move)
     except ValueError as e:
         # if game ends and it's a human player, end the game
-        """ if gameConfig["human_player"]: """
-        print(f"{RED}Game Over: {e}{RESET}")
-        running = False
-        return
-        """ else:  # if game ends and it's IA, reset the game
+        if board.game_mode == GameMode.HUMAN:
+            print(f"{RED}Game Over: {e}{RESET}")
+            running = False
+            return running, move
+        else:  # if game ends and it's IA, reset the game
             print(f"{YELLOW}RESET: {e}{RESET}")
             print("-"*20)
             move = None
-            board.reset() """
+            board.reset()
 
     # Draw everything
     screen.draw_board(board)
 
-    return running
+    return running, move
 
 
 def main_loop(board, screen):
@@ -110,15 +107,13 @@ def main_loop(board, screen):
                 game_speed,
                 step_by_step
             )
-        if not running:
-            break
 
-        # Run game logic
         if board.show_lobby:
             screen.draw_lobby()
         else:
+            # Run game logic
             if not paused or step_by_step:
-                running = game_loop(board, screen, move)
+                running, move = game_loop(board, screen, move, running)
                 step_by_step = False
 
         # FPS
