@@ -23,6 +23,10 @@ game:
         visual: true # show the game in a window
 
 ai:
+    training:
+        episodes: 100000
+        max_steps: 1000
+        target_avg_len: 35 # Length of snake we want to achieve (bonus)
     model:
         activation: "relu"
 
@@ -38,7 +42,3 @@ ai:
         use_distance_rewards: true
         closer_to_apple: 1
         farther_to_apple: -1
-
-    training:
-        max_steps: 1000
-        target_avg_len: 35 # Length of snake we want to achieve (bonus)
