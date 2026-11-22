@@ -1,6 +1,7 @@
 from core.program_arguments import handleArgs, loadProgramConfig
 from ui.Screen import Screen
 from aux.enums import GameMode, Move
+from agent import Agent
 from aux.colours import RED, GREEN, YELLOW, CYAN, RESET
 import pygame
 import yaml
@@ -54,7 +55,7 @@ def handleEvents(board, screen, event, running, paused, move, game_speed,
     return running, paused, move, game_speed, step_by_step
 
 
-def game_loop(board, screen, move, running):
+def game_loop(board, screen, trainer, move, running):
     if board.snake.show_vision:
         print(board.snakeVision())
         print(board.snake.current_direction)
@@ -63,8 +64,7 @@ def game_loop(board, screen, move, running):
     # Update board state
     try:
         if board.game_mode in [GameMode.AI_TRAIN, GameMode.AI_TEST]:
-            """ move = board.handleTurnAI() """
-            pass
+            move = trainer.train()
         board.handleTurn(move)
     except ValueError as e:
         # if game ends and it's a human player, end the game
@@ -84,7 +84,7 @@ def game_loop(board, screen, move, running):
     return running, move
 
 
-def main_loop(board, screen):
+def main_loop(board, screen, trainer):
     clock = pygame.time.Clock()
     game_speed = 1  # Speed from 1-5
     running = True
@@ -93,6 +93,7 @@ def main_loop(board, screen):
     step_by_step = board.step_by_step
 
     # Draw initial board
+    # Todo -> draw starting position
     # screen.draw_board(board)
 
     while running:
@@ -113,7 +114,8 @@ def main_loop(board, screen):
         else:
             # Run game logic
             if not paused or step_by_step:
-                running, move = game_loop(board, screen, move, running)
+                running, move = game_loop(
+                    board, screen, trainer, move, running)
                 step_by_step = False
 
         # FPS
@@ -124,8 +126,8 @@ def main_loop(board, screen):
 
 if __name__ == "__main__":
 
-    program_args, loaded_data, board, screen = loadProgramConfig()
+    program_args, loaded_data, board, screen, trainer = loadProgramConfig()
 
-    main_loop(board, screen)
+    main_loop(board, screen, trainer)
 
     print(f"{CYAN}✌️ Game finished{RESET}")

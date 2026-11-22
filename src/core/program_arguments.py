@@ -1,6 +1,7 @@
 from aux.colours import RED, GREEN, YELLOW, CYAN, RESET
 from ui.Screen import Screen
 from core.Board import Board
+from training.Trainer import Trainer
 import yaml
 import os
 import sys
@@ -108,9 +109,13 @@ def loadProgramConfig():
         screen: Screen = Screen(
             loaded_data["game"]["screen"]
         )
+        trainer: Trainer = Trainer(
+            board,
+            loaded_data["ai"]["training"]
+        )
     except Exception as e:
         print("wtf")
         print(f"{RED}Error: {e}{RESET}")
         sys.exit(1)
 
-    return program_args, loaded_data, board, screen
+    return program_args, loaded_data, board, screen, trainer
