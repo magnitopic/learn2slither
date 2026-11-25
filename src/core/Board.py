@@ -5,15 +5,19 @@ import random as rnd
 
 
 class Board:
-    def __init__(self, boardConfig, snakeConfig, argsConfig):
-        self.size = boardConfig["size"]
-        self.snake_initial_len = snakeConfig.get("initial_length", 3)
-        self.num_green_apples = boardConfig["num_green_apples"]
-        self.num_red_apples = boardConfig["num_red_apples"]
+    def __init__(self, config):
+        self.boardConfig = config["game"]["board"]
+        self.snakeConfig = config["game"]["snake"]
+        self.argsConfig = config["args"]
+
+        self.size = self.boardConfig["size"]
+        self.snake_initial_len = self.snakeConfig.get("initial_length", 3)
+        self.num_green_apples = self.boardConfig["num_green_apples"]
+        self.num_red_apples = self.boardConfig["num_red_apples"]
         self.value = np.full(
             (self.size + 2, self.size + 2), CellType.EMPTY.value)
-        self.show_lobby = argsConfig["showlobby"]
-        self.step_by_step = boardConfig['step_by_step'] | False
+        self.show_lobby = self.argsConfig["showlobby"]
+        self.step_by_step = self.boardConfig['step_by_step'] | False
 
         # Game mode determines whether the player is human or AI.
         # And if AI, if we are training or testing (see GameMode).
@@ -21,7 +25,7 @@ class Board:
         # without it, it is decided by the arguments.
         self.game_mode = None
         if not self.show_lobby:
-            self.set_game_mode(GameMode.AI_TEST if argsConfig["dontlearn"]
+            self.set_game_mode(GameMode.AI_TEST if self.argsConfig["dontlearn"]
                                else GameMode.AI_TRAIN)
 
         # Place walls around the edges
@@ -30,7 +34,7 @@ class Board:
         self.value[:, 0] = CellType.WALL.value
         self.value[:, -1] = CellType.WALL.value
 
-        self.snake = Snake(snakeConfig)
+        self.snake = Snake(self.snakeConfig)
 
         self.place_snake()
         self.place_initial_apples()
@@ -155,6 +159,8 @@ class Board:
                 self.value[y, x] = CellType.SNAKE_HEAD.value
             else:
                 self.value[y, x] = CellType.SNAKE_BODY.value
+
+        return 42, 42  # todo -> change to a more robust system
 
     def handleTurn(self, move: Move):
         if move is None:

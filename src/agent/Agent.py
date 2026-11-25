@@ -7,4 +7,13 @@ import random
 
 class DQNAgent:
     def __init__(self, config, device: str = 'cpu'):
-        pass
+        if config['args']["dontlearn"]:
+            self.epsilon = 0.0
+        else:
+            self.epsilon = config['epsilon']
+
+    def select_action(self, board, training: bool = True):
+        if training:
+            epsilon = 0.0
+        else:
+            epsilon = self.epsilon

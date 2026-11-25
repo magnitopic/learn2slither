@@ -24,8 +24,8 @@ game:
 
 ai:
     training:
-        episodes: 100000
-        max_steps: 1000
+        sessions: 100000 # number of sessions to train the AI
+        max_steps: 1000 # max steps per session, prevents infinite loops
         target_avg_len: 35 # Length of snake we want to achieve (bonus)
     model:
         activation: "relu"

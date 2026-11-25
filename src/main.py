@@ -3,6 +3,7 @@ from ui.Screen import Screen
 from aux.enums import GameMode, Move
 from agent import Agent
 from aux.colours import RED, GREEN, YELLOW, CYAN, RESET
+from datetime import datetime
 import pygame
 import yaml
 import sys
@@ -55,7 +56,7 @@ def handleEvents(board, screen, event, running, paused, move, game_speed,
     return running, paused, move, game_speed, step_by_step
 
 
-def game_loop(board, screen, trainer, move, running):
+""" def game_loop(board, screen, trainer, move, running):
     if board.snake.show_vision:
         print(board.snakeVision())
         print(board.snake.current_direction)
@@ -81,10 +82,37 @@ def game_loop(board, screen, trainer, move, running):
     # Draw everything
     screen.draw_board(board)
 
-    return running, move
+    return running, move """
 
 
-def main_loop(board, screen, trainer):
+
+def main_loop(board, screen, trainer, agent):
+    try:
+        # Run training
+        start_time = datetime.now()
+        final_stats = trainer.train(board, agent)
+        end_time = datetime.now()
+
+        # print stats
+        print(f"Time taken: {end_time - start_time}")
+        print("-"*20)
+        print(final_stats)
+        print("-"*20)
+
+        # TODO -> save model if training
+
+    except KeyboardInterrupt:
+        print(f"{YELLOW}Game interrupted by user{RESET}")
+        # TODO -> temp
+        sys.exit(1)
+    except Exception as e:
+        print(f"{RED}An error occurred: {e}{RESET}")
+        sys.exit(1)
+    finally:
+        pygame.quit()
+
+
+""" def main_loop(board, screen, trainer):
     clock = pygame.time.Clock()
     game_speed = 1  # Speed from 1-5
     running = True
@@ -121,13 +149,13 @@ def main_loop(board, screen, trainer):
         # FPS
         clock.tick(game_speed * 2)
 
-    pygame.quit()
+    pygame.quit() """
 
 
 if __name__ == "__main__":
 
-    program_args, loaded_data, board, screen, trainer = loadProgramConfig()
+    board, screen, trainer, agent = loadProgramConfig()
 
-    main_loop(board, screen, trainer)
+    main_loop(board, screen, trainer, agent)
 
     print(f"{CYAN}✌️ Game finished{RESET}")

@@ -2,6 +2,7 @@ from aux.colours import RED, GREEN, YELLOW, CYAN, RESET
 from ui.Screen import Screen
 from core.Board import Board
 from training.Trainer import Trainer
+from agent.Agent import DQNAgent
 import yaml
 import os
 import sys
@@ -42,7 +43,7 @@ def handleArgs():
 
     def fail(message):
         print(f"{RED}Error: {message}{RESET}")
-        sys.exit(1)
+        sys.exit(2)
 
     argv = sys.argv[1:]
     i = 0
@@ -92,30 +93,44 @@ def handleArgs():
     return values
 
 
-def loadProgramConfig():
-    # Get arguments
-    program_args = handleArgs()
+def getAllConfigs():
+    configs = {}
 
-    # Get data from yaml file
-    with open(program_args["config"], 'r') as file:
+    # get cmd arguments
+    program_args = handleArgs()
+    configs["args"] = program_args
+
+    # get yml file arguments
+    with open(configs["args"]["config"], 'r') as file:
         loaded_data = yaml.safe_load(file)
 
-    try:
-        board: Board = Board(
-            loaded_data["game"]["board"],
-            loaded_data["game"]["snake"],
-            program_args
-        )
-        screen: Screen = Screen(
-            loaded_data["game"]["screen"]
-        )
-        trainer: Trainer = Trainer(
-            board,
-            loaded_data["ai"]["training"]
-        )
-    except Exception as e:
-        print("wtf")
-        print(f"{RED}Error: {e}{RESET}")
-        sys.exit(1)
+    # merge configs onto one dictionary
+    configs = configs | loaded_data
 
-    return program_args, loaded_data, board, screen, trainer
+    return configs
+
+
+def loadProgramConfig():
+    # Get arguments
+    program_configs = getAllConfigs()
+
+    """ try: """
+    board: Board = Board(
+        program_configs
+    )
+    screen: Screen = Screen(
+        program_configs["game"]["screen"]
+    )
+    agent: DQNAgent = DQNAgent(
+        program_configs,
+        device='cpu' # todo -> revise if necessary
+    )
+    trainer: Trainer = Trainer(
+        board,
+        program_configs["ai"]["training"]
+    )
+    """ except Exception as e:
+        print(f"{RED}Error: {e}{RESET}")
+        sys.exit(3) """
+
+    return board, screen, trainer, agent
