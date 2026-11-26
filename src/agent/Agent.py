@@ -6,6 +6,8 @@ import torch.optim as optim
 import numpy as np
 import random
 
+from agent.Model import DQN
+
 
 Experience = namedtuple('Experience',
                         ['state', 'action', 'reward', 'next_state', 'done'])
@@ -50,12 +52,11 @@ class ReplayMemory:
 
 class DQNAgent:
     def __init__(self, config, device: str = 'cpu'):
+        agent_config = config['ai']['agent']
+        model_config = config['ai']['model']
 
         # Hyperparameters from config
         self.device = device
-
-        agent_config = config['ai']['agent']
-
         self.learning_rate = agent_config['learning_rate']
         self.gamma = agent_config['gamma']
         self.epsilon_end = agent_config['epsilon_end']
@@ -64,11 +65,37 @@ class DQNAgent:
         self.memory_size = agent_config['memory_size']
         self.target_update_freq = agent_config['target_update_frequency']
         self.use_double_dqn = agent_config.get('use_double_dqn', False)
-
         if config['args']["dontlearn"]:
             self.epsilon = 0.0
         else:
             self.epsilon = agent_config['epsilon_start']
+
+        # Initialize neural networks
+        self.q_network = DQN(model_config).to(self.device)
+        self.target_network = DQN(model_config).to(self.device)
+
+        # Synchronize target network with Q-network
+        self.target_network.load_state_dict(self.q_network.state_dict())
+        self.target_network.eval()
+
+        # Loss function
+        self.criterion = nn.MSELoss()
+
+        # Memory
+        self.memory = ReplayMemory(self.memory_size)
+
+        # Statistics
+        self.steps_done = 0
+        self.episodes_done = 0
+        self.update_counter = 0
+        self.learning_enabled = True
+
+        # Training history
+        self.loss_history = deque(maxlen=1000)
+        self.reward_history = deque(maxlen=1000)
+        self.epsilon_history = deque(maxlen=1000)
+
+        print("- Starting DQN Agent -")
 
     def select_action(self, board):
 

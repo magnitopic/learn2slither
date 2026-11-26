@@ -29,17 +29,27 @@ ai:
         target_avg_len: 35 # Length of snake we want to achieve (bonus)
 
     model:
+        input_size: 16
+        hidden_sizes: [128, 64]
+        output_size: 3
         activation: "relu"
 
     agent:
+        # Hyperparameters for learning
         learning_rate: 0.01
         gamma: 0.9
+
+        # Exploration vs Exploitation parameters
         epsilon_start: 0.9
         epsilon_end: 0.01
         epsilon_decay: 0.9999
+
+        # Memory parameters
         batch_size: 64
         memory_size: 10000
-        target_update_freq: 1000
+
+        # Extra
+        target_update_frequency: 100
         use_double_dqn: true
 
     rewards:

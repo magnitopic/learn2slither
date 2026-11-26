@@ -8,9 +8,9 @@ from typing import Dict, List, Optional, Tuple
 class DQN(nn.Module):
 
     def __init__(self, config: Dict):
-        self.input_size = config['input_size']  # 16 características
-        self.hidden_sizes = config['hidden_sizes']  # [42, 24]
-        self.output_size = config['output_size']  # 3 acciones
+        self.input_size = config['input_size']
+        self.hidden_sizes = config['hidden_sizes']
+        self.output_size = config['output_size']
         self.activation = config.get('activation', 'relu')
         self.weight_init = config.get('weight_init', 'xavier_uniform')
 
