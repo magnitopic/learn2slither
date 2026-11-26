@@ -98,8 +98,7 @@ class Trainer:
             if board.game_mode == GameMode.HUMAN:
                 action = self.screen.move
             else:
-                action = agent.select_action(
-                    board, training=board.game_mode == GameMode.AI_TRAIN)
+                action = agent.select_action(board)
 
             # Update board state
             try:

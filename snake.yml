@@ -27,11 +27,20 @@ ai:
         sessions: 100000 # number of sessions to train the AI
         max_steps: 1000 # max steps per session, prevents infinite loops
         target_avg_len: 35 # Length of snake we want to achieve (bonus)
+
     model:
         activation: "relu"
 
     agent:
         learning_rate: 0.01
+        gamma: 0.9
+        epsilon_start: 0.9
+        epsilon_end: 0.01
+        epsilon_decay: 0.9999
+        batch_size: 64
+        memory_size: 10000
+        target_update_freq: 1000
+        use_double_dqn: true
 
     rewards:
         green_apple: 10

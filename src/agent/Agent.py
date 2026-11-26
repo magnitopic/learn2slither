@@ -50,10 +50,25 @@ class ReplayMemory:
 
 class DQNAgent:
     def __init__(self, config, device: str = 'cpu'):
+
+        # Hyperparameters from config
+        self.device = device
+
+        agent_config = config['ai']['agent']
+
+        self.learning_rate = agent_config['learning_rate']
+        self.gamma = agent_config['gamma']
+        self.epsilon_end = agent_config['epsilon_end']
+        self.epsilon_decay = agent_config['epsilon_decay']
+        self.batch_size = agent_config['batch_size']
+        self.memory_size = agent_config['memory_size']
+        self.target_update_freq = agent_config['target_update_frequency']
+        self.use_double_dqn = agent_config.get('use_double_dqn', False)
+
         if config['args']["dontlearn"]:
             self.epsilon = 0.0
         else:
-            self.epsilon = config['epsilon']
+            self.epsilon = agent_config['epsilon_start']
 
     def select_action(self, board):
 
