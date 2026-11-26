@@ -1,59 +1,7 @@
-from core.program_arguments import handleArgs, loadProgramConfig
-from ui.Screen import Screen
-from aux.enums import GameMode, Move
-from agent import Agent
-from aux.colours import RED, GREEN, YELLOW, CYAN, RESET
+from core.program_arguments import loadProgramConfig
+from aux.colours import RED, YELLOW, CYAN, RESET
 from datetime import datetime
-import pygame
-import yaml
 import sys
-
-number_keys = ["K_1", "K_2", "K_3", "K_4", "K_5"]
-opposite_pairs = {('up', 'down'), ('down', 'up'),
-                  ('left', 'right'), ('right', 'left')}
-movement_keys = {
-    pygame.K_UP: Move.UP,
-    pygame.K_DOWN: Move.DOWN,
-    pygame.K_LEFT: Move.LEFT,
-    pygame.K_RIGHT: Move.RIGHT
-}
-
-
-def handleEvents(board, screen, event, running, paused, move, game_speed,
-                 step_by_step):
-
-    if event.type == pygame.QUIT:
-        running = False
-    elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-        if board.show_lobby:
-            choice = screen.get_lobby_choice(event.pos)
-            if choice == "human":
-                board.set_game_mode(GameMode.HUMAN)
-            elif choice == "ai":
-                # The lobby is only shown when not training
-                board.set_game_mode(GameMode.AI_TEST)
-            elif choice == "exit":
-                running = False
-    elif event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_ESCAPE:
-            running = False
-        elif not board.show_lobby and board.game_mode == GameMode.HUMAN:
-            if event.key == pygame.K_SPACE:
-                paused = not paused
-                if paused:
-                    print(f"{YELLOW}⏸️ Game paused{RESET}")
-                else:
-                    print(f"{GREEN}▶️ Game resumed{RESET}")
-            elif event.key == pygame.K_d:
-                step_by_step = True
-            elif event.key in [getattr(pygame, key) for key in number_keys]:
-                game_speed = int(event.unicode)
-                print(f"{YELLOW}⚡ Game speed set to {game_speed}{RESET}")
-            elif event.key in movement_keys:
-                if (board.snake.current_direction.value,
-                        movement_keys[event.key].value) not in opposite_pairs:
-                    move = movement_keys[event.key]
-    return running, paused, move, game_speed, step_by_step
 
 
 """ def game_loop(board, screen, trainer, move, running):
@@ -85,9 +33,12 @@ def handleEvents(board, screen, event, running, paused, move, game_speed,
     return running, move """
 
 
-
 def main_loop(board, screen, trainer, agent):
     try:
+        # With the lobby, the game mode is chosen before playing
+        if board.show_lobby and not screen.run_lobby(board):
+            return
+
         # Run training
         start_time = datetime.now()
         final_stats = trainer.train(board, agent)
@@ -109,7 +60,8 @@ def main_loop(board, screen, trainer, agent):
         print(f"{RED}An error occurred: {e}{RESET}")
         sys.exit(1)
     finally:
-        pygame.quit()
+        if screen:
+            screen.close()
 
 
 """ def main_loop(board, screen, trainer):

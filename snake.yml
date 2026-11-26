@@ -1,7 +1,7 @@
 game:
     screen:
         size_px: 900
-        show_stats: false # show stats panel (bonus)
+        show_stats: true # show stats panel (bonus)
         show_grid: true # show grid lines
 
         colour:

@@ -118,16 +118,21 @@ def loadProgramConfig():
     board: Board = Board(
         program_configs
     )
-    screen: Screen = Screen(
-        program_configs["game"]["screen"]
-    )
+
+    # No window when the display is off
+    if program_configs["args"]["visual"] == "on":
+        screen = Screen(program_configs["game"]["screen"])
+    else:
+        screen: Screen = None
+
     agent: DQNAgent = DQNAgent(
         program_configs,
-        device='cpu' # todo -> revise if necessary
+        device='cpu'  # todo -> revise if necessary
     )
     trainer: Trainer = Trainer(
         board,
-        program_configs["ai"]["training"]
+        program_configs["ai"]["training"],
+        screen
     )
     """ except Exception as e:
         print(f"{RED}Error: {e}{RESET}")
