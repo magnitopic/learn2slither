@@ -59,7 +59,7 @@ class Trainer:
         return final_stats
 
     def run_episode(self, board, agent):
-        board.reset()
+        state = board.reset()
         self.episode_reward = 0
         self.episode_steps = 0
         self.episode_losses = []
@@ -101,10 +101,22 @@ class Trainer:
                 action = agent.select_action(board)
 
             # Update board state
-            self.game_over, reward = board.handleTurn(action)
+            next_state, self.game_over, reward = board.handleTurn(action)
             if self.game_over:
                 print(f"{YELLOW}RESET{RESET}")
                 print("-"*20)
+
+            # Update agent with the new state and reward
+            if board.game_mode in [GameMode.AI_TRAIN, GameMode.AI_TEST]:
+                agent.store_experience(state, action, reward, next_state, self.game_over)
+
+            state = next_state
+
+            # Train agent
+            if board.game_mode == GameMode.AI_TRAIN:
+                loss = agent.train_step()
+                if loss is not None:
+                    self.episode_losses.append(loss)
 
             # Update stats
             self.total_steps += 1

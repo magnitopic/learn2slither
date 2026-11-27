@@ -1,5 +1,7 @@
 from core.Snake import Snake
+from core.Checker import Checker
 from aux.enums import CellType, GameMode, Move
+
 import numpy as np
 import random as rnd
 
@@ -41,6 +43,7 @@ class Board:
         self.value[:, -1] = CellType.WALL.value
 
         self.snake = Snake(self.snakeConfig)
+        self.checker = Checker()
 
         self.place_snake()
         self.place_initial_apples()
@@ -209,12 +212,52 @@ class Board:
     def get_snake_vision(self):
         pass
 
-    def get_state(self):
+    def get_state(self) -> np.ndarray:
         '''
         Returns the current state of the board to be the value vector for the
         neural network.
         '''
-        pass
+        state = np.zeros(16, dtype=np.float32)
+
+        vision = self.get_snake_vision()
+
+        # get relative directions for current position
+        rel_dirs = self.snake.get_relative_directions()
+
+        # state[1:3] -> immediate danger
+        state[0] = self.checker.danger_immediate(vision, rel_dirs['front'])
+        state[1] = self.checker.danger_immediate(vision, rel_dirs['left'])
+        state[2] = self.checker.danger_immediate(vision, rel_dirs['right'])
+
+        # state [4:6] -> green apple visible
+        state[3] = self.checker.green_apple_visible(vision, rel_dirs['front'])
+        state[4] = self.checker.green_apple_visible(vision, rel_dirs['left'])
+        state[5] = self.checker.green_apple_visible(vision, rel_dirs['right'])
+
+        # state [7:9] -> red apple immediate
+        state[6] = self.checker.red_apple_immediate(vision, rel_dirs['front'])
+        state[7] = self.checker.red_apple_immediate(vision, rel_dirs['left'])
+        state[8] = self.checker.red_apple_immediate(vision, rel_dirs['right'])
+
+        # state [10:11] -> current direction
+        if self.snake.current_direction in [Move.UP, Move.DOWN]:
+            state[9] = 0
+            state[10] = 0 if self.snake.current_direction == Move.UP else 1
+        else:
+            state[9] = 1
+            state[10] = 0 if self.snake.current_direction == Move.LEFT else 1
+
+        # state [12:13] -> absolute position
+        head_y, head_x = self.snake.head_pos
+        state[11] = (head_y - 1) / self.size
+        state[12] = (head_x - 1) / self.size
+
+        # state [14:16] -> distance to nearest object
+        state[13] = self.checker.dist_to_nearest_obj(vision, rel_dirs['front'])
+        state[14] = self.checker.dist_to_nearest_obj(vision, rel_dirs['left'])
+        state[15] = self.checker.dist_to_nearest_obj(vision, rel_dirs['right'])
+
+        return state
 
     """ Aux functions """
 

@@ -47,7 +47,7 @@ ai:
         # Memory parameters
         batch_size: 64
         memory_size: 10000
-
+        optimizer: "adam"
         # Extra
         target_update_frequency: 100
         use_double_dqn: true
