@@ -7,7 +7,7 @@ class Checker:
         self.board_size = board_size
 
     def danger_immediate(self, vision, direction):
-        if len(vision) < 0:
+        if len(vision[direction]) > 0:
             first_cell = vision[direction][0]
             if first_cell in [CellType.WALL.value, CellType.SNAKE_BODY.value,]:
                 return 1.0
@@ -31,5 +31,7 @@ class Checker:
     def dist_nearest_body(self, vision, direction):
         for i, cell in enumerate(vision[direction]):
             if cell == CellType.SNAKE_BODY.value:
-                return (i + 1) / len(self.board_size)
-        return -1.0
+                # 1/distance: 1.0 when adjacent, smaller the farther away.
+                # Independent of the board size.
+                return 1.0 / (i + 1)
+        return 0.0  # no body in sight

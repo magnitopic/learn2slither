@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 from core.Snake import Snake
 from core.Checker import Checker
 from aux.enums import CellType, GameMode, Move
@@ -191,7 +193,9 @@ class Board:
 
         self.updateBoardValue()
 
-        return game_over, reward
+        state = self.get_state()
+
+        return state, game_over, reward
 
     def reset(self):
         self.value = np.full(
@@ -209,8 +213,48 @@ class Board:
         self.place_snake()
         self.place_initial_apples()
 
-    def get_snake_vision(self):
-        pass
+    """ -- Board information for the AI's state representation -- """
+
+    def get_snake_vision(self) -> Dict[Move, List[str]]:
+        head_y, head_x = self.snake.head_pos
+
+        # Get the vision in each direction
+        vision = {
+            Move.UP: [],
+            Move.DOWN: [],
+            Move.LEFT: [],
+            Move.RIGHT: [],
+        }
+
+        # up
+        for y in range(head_y - 1, -1, -1):
+            cell = self.value[y, head_x]
+            vision[Move.UP].append(cell)
+            if cell == CellType.WALL.value:
+                break
+
+        # down
+        for y in range(head_y + 1, self.size + 2):
+            cell = self.value[y, head_x]
+            vision[Move.DOWN].append(cell)
+            if cell == CellType.WALL.value:
+                break
+
+        # left
+        for x in range(head_x - 1, -1, -1):
+            cell = self.value[head_y, x]
+            vision[Move.LEFT].append(cell)
+            if cell == CellType.WALL.value:
+                break
+
+        # right
+        for x in range(head_x + 1, self.size + 2):
+            cell = self.value[head_y, x]
+            vision[Move.RIGHT].append(cell)
+            if cell == CellType.WALL.value:
+                break
+
+        return vision
 
     def get_state(self) -> np.ndarray:
         '''
@@ -259,12 +303,14 @@ class Board:
 
         return state
 
-    """ Aux functions """
+    """ -- Aux functions -- """
 
     def __str__(self):
+        """ String representation of the entire board """
         return "\n".join(" ".join(row) for row in self.value)
 
     def snakeVision(self):
+        """ String representation of the snake's vision in the board """
         snakeHeadPos: tuple = self.snake.head_pos
         vision = ""
         for i in range(self.size + 2):
