@@ -101,12 +101,10 @@ class Trainer:
                 action = agent.select_action(board)
 
             # Update board state
-            try:
-                board.handleTurn(action)
-            except ValueError as e:
-                print(f"{YELLOW}RESET: {e}{RESET}")
+            self.game_over, reward = board.handleTurn(action)
+            if self.game_over:
+                print(f"{YELLOW}RESET{RESET}")
                 print("-"*20)
-                self.game_over = True
 
             # Update stats
             self.total_steps += 1

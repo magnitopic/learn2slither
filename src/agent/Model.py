@@ -8,6 +8,7 @@ from typing import Dict, List, Optional, Tuple
 class DQN(nn.Module):
 
     def __init__(self, config: Dict):
+        super(DQN, self).__init__()
         self.input_size = config['input_size']
         self.hidden_sizes = config['hidden_sizes']
         self.output_size = config['output_size']

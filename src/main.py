@@ -55,13 +55,13 @@ def main_loop(board, screen, trainer, agent):
     except KeyboardInterrupt:
         print(f"{YELLOW}Game interrupted by user{RESET}")
         # TODO -> temp
-        sys.exit(1)
-    except Exception as e:
+        sys.exit(4)
+    """ except Exception as e:
         print(f"{RED}An error occurred: {e}{RESET}")
-        sys.exit(1)
-    finally:
+        sys.exit(5) """
+    """ finally:
         if screen:
-            screen.close()
+            screen.close() """
 
 
 """ def main_loop(board, screen, trainer):

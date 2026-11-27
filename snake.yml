@@ -54,7 +54,7 @@ ai:
 
     rewards:
         green_apple: 10
-        red_apple: -10
+        red_apple: -5
         death: -100
         stop: 0.1
 

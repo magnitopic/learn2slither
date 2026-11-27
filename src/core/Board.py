@@ -10,6 +10,12 @@ class Board:
         self.snakeConfig = config["game"]["snake"]
         self.argsConfig = config["args"]
 
+        # reward values
+        self.green_apple_reward = config["ai"]["rewards"]["green_apple"]
+        self.red_apple_reward = config["ai"]["rewards"]["red_apple"]
+        self.death_reward = config["ai"]["rewards"]["death"]
+        self.stop_reward = config["ai"]["rewards"]["stop"]
+
         self.size = self.boardConfig["size"]
         self.snake_initial_len = self.snakeConfig.get("initial_length", 3)
         self.num_green_apples = self.boardConfig["num_green_apples"]
@@ -108,9 +114,11 @@ class Board:
             self.place_apple(CellType.RED_APPLE)
 
     def moveSnake(self, move: Move):
+        reward = 0
         new_head_pos = None
         eating_red_apple = False
         eating_green_apple = False
+        game_over = False
 
         if move == Move.UP:
             new_head_pos = (self.snake.head_pos[0] - 1, self.snake.head_pos[1])
@@ -123,12 +131,18 @@ class Board:
 
         if self.value[new_head_pos] == CellType.RED_APPLE.value:
             eating_red_apple = True
+            reward = self.red_apple_reward
         elif self.value[new_head_pos] == CellType.GREEN_APPLE.value:
             eating_green_apple = True
+            reward = self.green_apple_reward
         elif self.value[new_head_pos] == CellType.WALL.value:
-            raise ValueError("Snake hit the wall.")
+            print("Snake hit the wall.")
+            game_over = True
+            reward = self.death_reward
         elif self.value[new_head_pos] == CellType.SNAKE_BODY.value:
-            raise ValueError("Snake hit itself.")
+            print("Snake hit itself.")
+            game_over = True
+            reward = self.death_reward
 
         self.snake.body.insert(0, new_head_pos)
         self.snake.head_pos = new_head_pos
@@ -145,7 +159,11 @@ class Board:
         self.snake.current_direction = move
 
         if self.snake.length == 0:
-            raise ValueError("Snake has died.")
+            print("Snake has died.")
+            game_over = True
+            reward = self.death_reward
+
+        return reward, game_over
 
     def updateBoardValue(self):
         # remove all snake body and head
@@ -166,9 +184,11 @@ class Board:
         if move is None:
             move = self.snake.current_direction
 
-        self.moveSnake(move)
+        game_over, reward = self.moveSnake(move)
 
         self.updateBoardValue()
+
+        return game_over, reward
 
     def reset(self):
         self.value = np.full(
