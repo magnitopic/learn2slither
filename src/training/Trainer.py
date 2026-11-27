@@ -108,7 +108,8 @@ class Trainer:
 
             # Update agent with the new state and reward
             if board.game_mode in [GameMode.AI_TRAIN, GameMode.AI_TEST]:
-                agent.store_experience(state, action, reward, next_state, self.game_over)
+                agent.store_experience(
+                    state, action, reward, next_state, self.game_over)
 
             state = next_state
 

@@ -1,4 +1,4 @@
-from aux.colours import RED, GREEN, YELLOW, CYAN, RESET
+from aux.colours import RED, RESET
 from ui.Screen import Screen
 from core.Board import Board
 from training.Trainer import Trainer

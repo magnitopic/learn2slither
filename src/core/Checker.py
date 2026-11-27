@@ -17,7 +17,7 @@ class Checker:
         for cell in vision[direction]:
             if cell == CellType.GREEN_APPLE.value:
                 return 1.0
-            if cell in [CellType.WALL.value, CellType.SNAKE_BODY.value, CellType.RED_APPLE.value]:
+            if cell not in [CellType.EMPTY.value, CellType.GREEN_APPLE.value]:
                 break
         return 0.0
 

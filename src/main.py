@@ -1,5 +1,5 @@
 from core.program_arguments import loadProgramConfig
-from aux.colours import RED, YELLOW, CYAN, RESET
+from aux.colours import YELLOW, CYAN, RESET
 from datetime import datetime
 import sys
 

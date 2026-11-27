@@ -173,8 +173,8 @@ class DQNAgent:
                     next_state_batch).max(1)[0].unsqueeze(1)
 
             # Compute targets with the Bellman equation
-            target_q_values = reward_batch.unsqueeze(
-                1) + (self.gamma * next_q_values * (1 - done_batch.unsqueeze(1)))
+            target_q_values = reward_batch.unsqueeze(1) +\
+                (self.gamma * next_q_values * (1 - done_batch.unsqueeze(1)))
 
         # compute loss
         loss = self.criterion(current_q_values, target_q_values)
