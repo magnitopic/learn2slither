@@ -43,7 +43,7 @@ class Board:
         self.value[:, -1] = CellType.WALL.value
 
         self.snake = Snake(self.snakeConfig)
-        self.checker = Checker()
+        self.checker = Checker(self.size)
 
         self.place_snake()
         self.place_initial_apples()
@@ -252,10 +252,10 @@ class Board:
         state[11] = (head_y - 1) / self.size
         state[12] = (head_x - 1) / self.size
 
-        # state [14:16] -> distance to nearest object
-        state[13] = self.checker.dist_to_nearest_obj(vision, rel_dirs['front'])
-        state[14] = self.checker.dist_to_nearest_obj(vision, rel_dirs['left'])
-        state[15] = self.checker.dist_to_nearest_obj(vision, rel_dirs['right'])
+        # state [14:16] -> distance to nearest snake body
+        state[13] = self.checker.dist_nearest_body(vision, rel_dirs['front'])
+        state[14] = self.checker.dist_nearest_body(vision, rel_dirs['left'])
+        state[15] = self.checker.dist_nearest_body(vision, rel_dirs['right'])
 
         return state
 
