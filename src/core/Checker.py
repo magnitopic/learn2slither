@@ -3,9 +3,6 @@ from aux.enums import CellType
 
 
 class Checker:
-    def __init__(self, board_size):
-        self.board_size = board_size
-
     def danger_immediate(self, vision, direction):
         if len(vision[direction]) > 0:
             first_cell = vision[direction][0]

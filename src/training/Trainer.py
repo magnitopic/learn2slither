@@ -101,7 +101,7 @@ class Trainer:
                 action = agent.select_action(board)
 
             # Update board state
-            next_state, self.game_over, reward = board.handleTurn(action)
+            next_state, reward, self.game_over, info = board.handleTurn(action)
             if self.game_over:
                 print(f"{YELLOW}RESET{RESET}")
                 print("-"*20)

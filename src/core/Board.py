@@ -45,7 +45,7 @@ class Board:
         self.value[:, -1] = CellType.WALL.value
 
         self.snake = Snake(self.snakeConfig)
-        self.checker = Checker(self.size)
+        self.checker = Checker()
 
         self.place_snake()
         self.place_initial_apples()
@@ -189,13 +189,20 @@ class Board:
         if move is None:
             move = self.snake.current_direction
 
-        game_over, reward = self.moveSnake(move)
+        # The AI sends a relative action (0 straight, 1 left, 2 right),
+        # the keyboard sends an absolute Move
+        if not isinstance(move, Move):
+            move = self.snake.get_relative_directions()[
+                ("front", "left", "right")[move]]
+
+        reward, game_over = self.moveSnake(move)
 
         self.updateBoardValue()
 
         state = self.get_state()
+        info = {"length": self.snake.length}
 
-        return state, game_over, reward
+        return state, reward, game_over, info
 
     def reset(self):
         self.value = np.full(
@@ -212,6 +219,8 @@ class Board:
 
         self.place_snake()
         self.place_initial_apples()
+
+        return self.get_state()
 
     """ -- Board information for the AI's state representation -- """
 
